@@ -1,0 +1,3049 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JST UGC 脚本工作室</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Syne:wght@700;800&display=swap');
+:root {
+  --bg:#0a0a0f; --s1:#12121a; --s2:#1a1a26; --b:#2a2a3a;
+  --a:#c8ff00; --p:#7c4dff; --t:#e8e8f0; --m:#6b6b80;
+  --r:#ff4d6d; --g:#ffd166;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--t);font-family:'Noto Sans SC',sans-serif;min-height:100vh;}
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
+
+/* HEADER */
+.hdr{margin-bottom:36px;}
+.hdr-tag{display:inline-block;background:var(--p);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:14px;}
+.hdr h1{font-family:'Syne',sans-serif;font-size:clamp(28px,5vw,46px);font-weight:800;line-height:1.1;}
+.hdr h1 em{color:var(--a);font-style:normal;}
+.hdr p{color:var(--m);margin-top:10px;font-size:14px;line-height:1.6;}
+
+/* REF BOX */
+.ref{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:20px;margin-bottom:28px;position:relative;overflow:hidden;}
+.ref::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--p),var(--a));}
+.ref-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--p);margin-bottom:14px;}
+.ref-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:560px){.ref-grid{grid-template-columns:1fr;}}
+.ref-card{background:var(--s2);border-radius:8px;padding:12px 14px;border:1px solid var(--b);}
+.ref-card .rl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);margin-bottom:5px;}
+.ref-card .rv{font-size:13px;line-height:1.5;}
+.ref-card .rv strong{color:var(--a);}
+
+/* STEPS */
+.steps{display:flex;gap:8px;margin-bottom:28px;flex-wrap:wrap;}
+.step{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--m);padding:6px 14px;border-radius:99px;border:1px solid var(--b);cursor:pointer;transition:all .2s;}
+.step.active{color:var(--bg);background:var(--a);border-color:var(--a);}
+.step.done{color:var(--a);border-color:var(--a);}
+.step b{font-weight:700;}
+
+/* PANELS */
+.panel{display:none;animation:fadeUp .3s ease;}
+.panel.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--b);border-radius:12px;padding:26px;margin-bottom:16px;}
+.card-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--m);margin-bottom:20px;line-height:1.6;}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{padding:6px 16px;border-radius:99px;border:1px solid var(--b);font-size:12px;cursor:pointer;background:none;color:var(--m);transition:all .2s;font-family:'Noto Sans SC',sans-serif;}
+.tab.on{background:var(--p);color:#fff;border-color:var(--p);}
+.tab.ok{border-color:var(--a);color:var(--a);}
+.tab.add{border-style:dashed;color:var(--a);border-color:var(--a);}
+
+/* FORM */
+.fg{margin-bottom:16px;}
+.fg label{font-size:12px;font-weight:500;color:var(--m);display:block;margin-bottom:6px;}
+.fg label .req{color:var(--r);}
+.fg label .tag{font-size:10px;padding:1px 6px;border-radius:3px;margin-left:6px;font-weight:600;}
+.tag-cr{background:rgba(124,77,255,.2);color:var(--p);}
+.tag-you{background:rgba(200,255,0,.12);color:var(--a);}
+input[type=text],textarea,select{width:100%;background:var(--s2);border:1px solid var(--b);border-radius:8px;color:var(--t);font-family:'Noto Sans SC',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color .2s;resize:vertical;}
+input:focus,textarea:focus,select:focus{border-color:var(--p);}
+textarea{min-height:80px;line-height:1.7;}
+select option{background:var(--s2);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.row2{grid-template-columns:1fr;}}
+.fsec{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--m);margin:22px 0 14px;display:flex;align-items:center;gap:10px;}
+.fsec::after{content:'';flex:1;height:1px;background:var(--b);}
+
+/* PASTE BOX */
+.paste-box{background:linear-gradient(135deg,rgba(124,77,255,.07),rgba(200,255,0,.03));border:1.5px dashed rgba(124,77,255,.35);border-radius:12px;padding:20px;margin-bottom:20px;}
+.paste-box:focus-within{border-color:var(--p);}
+.paste-lbl{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--p);margin-bottom:8px;}
+.paste-hint{font-size:12px;color:var(--m);margin-bottom:10px;line-height:1.6;}
+.paste-hint kbd{background:var(--s2);border:1px solid var(--b);border-radius:4px;padding:1px 6px;font-size:11px;}
+#pasteArea{min-height:150px;font-size:13px;line-height:1.65;}
+
+/* NOTES BOX */
+.notes-box{background:rgba(200,255,0,.04);border:1px solid rgba(200,255,0,.15);border-radius:12px;padding:20px;}
+.notes-lbl{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a);margin-bottom:14px;}
+
+/* BUTTONS */
+.btn{font-family:'Noto Sans SC',sans-serif;font-size:13px;font-weight:700;padding:11px 24px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:7px;}
+.btn-a{background:var(--a);color:var(--bg);}
+.btn-a:hover{background:#d4ff1a;transform:translateY(-1px);}
+.btn-s{background:var(--s2);color:var(--t);border:1px solid var(--b);}
+.btn-s:hover{border-color:var(--p);}
+.btn-d{background:rgba(255,77,109,.12);color:var(--r);border:1px solid rgba(255,77,109,.25);font-size:12px;padding:7px 14px;}
+.btn-gen{background:linear-gradient(135deg,var(--p),#b23cff);color:#fff;font-size:14px;padding:13px 30px;}
+.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,77,255,.4);}
+.btn-parse{background:var(--p);color:#fff;font-size:13px;font-weight:700;padding:10px 22px;border-radius:8px;border:none;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-parse:hover{background:#9060ff;}
+.btn-parse:disabled{opacity:.5;cursor:not-allowed;}
+.brow{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+
+/* STATUS */
+.status{font-size:12px;color:var(--m);margin-top:8px;min-height:18px;}
+.status.ok{color:var(--a);}
+.status.err{color:var(--r);}
+.status.loading{color:var(--p);}
+
+/* HOOK SECTION */
+.hook-box{background:var(--s2);border-radius:10px;padding:20px;border:1px solid var(--b);margin-top:20px;}
+.hook-lbl{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--r);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.hook-lbl::after{content:'';flex:1;height:1px;background:var(--b);}
+.hook-opt{background:var(--s1);border:1.5px solid var(--b);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.hook-opt:hover{border-color:var(--p);}
+.hook-opt.sel{border-color:var(--a);}
+.hook-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--b);flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.hook-opt.sel .hook-dot{border-color:var(--a);background:var(--a);}
+.hook-dot-inner{width:7px;height:7px;border-radius:50%;background:var(--bg);display:none;}
+.hook-opt.sel .hook-dot-inner{display:block;}
+.hook-text{font-size:14px;line-height:1.5;}
+.hook-opt.sel .hook-text{color:var(--a);font-weight:600;}
+
+/* OUTPUT */
+.out-card{background:var(--s1);border:1px solid var(--b);border-radius:12px;overflow:hidden;margin-bottom:20px;}
+.out-hdr{background:var(--s2);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);flex-wrap:wrap;gap:10px;}
+.out-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.out-body{padding:20px;}
+.otabs{display:flex;gap:4px;margin-bottom:16px;}
+.otab{padding:7px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--b);background:none;color:var(--m);font-family:'Noto Sans SC',sans-serif;transition:all .2s;}
+.otab.on{background:var(--s2);color:var(--t);border-color:var(--p);}
+.script-box{background:var(--s2);border-radius:10px;padding:20px;border:1px solid var(--b);white-space:pre-wrap;font-size:14px;line-height:1.9;position:relative;min-height:160px;}
+.cbtn{position:absolute;top:10px;right:10px;background:var(--s1);border:1px solid var(--b);color:var(--m);font-size:11px;font-weight:600;padding:5px 11px;border-radius:6px;cursor:pointer;transition:all .2s;font-family:'Noto Sans SC',sans-serif;}
+.cbtn:hover{color:var(--a);border-color:var(--a);}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{background:var(--s2);padding:10px 14px;text-align:left;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);border-bottom:2px solid var(--b);}
+.tbl th:nth-child(2){color:var(--p);} .tbl th:nth-child(3){color:var(--a);}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--b);vertical-align:top;line-height:1.6;}
+.tbl tr:hover td{background:rgba(255,255,255,.02);}
+.slbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:4px;display:inline-block;margin-bottom:4px;}
+.s1c{background:rgba(255,77,109,.15);color:var(--r);}
+.s2c{background:rgba(124,77,255,.15);color:var(--p);}
+.s3c{background:rgba(255,209,102,.15);color:var(--g);}
+.s4c{background:rgba(200,255,0,.12);color:var(--a);}
+.s5c{background:rgba(255,159,67,.15);color:#ff9f43;}
+.at{background:rgba(124,77,255,.2);color:var(--p);font-size:10px;padding:2px 7px;border-radius:4px;display:inline-block;margin-right:4px;}
+.bt{background:rgba(200,255,0,.12);color:var(--a);font-size:10px;padding:2px 7px;border-radius:4px;display:inline-block;margin-right:4px;}
+
+/* LOADING / EMPTY */
+.lw{text-align:center;padding:50px 20px;}
+.sp{width:24px;height:24px;border:2px solid var(--b);border-top-color:var(--p);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.lw p{font-size:13px;color:var(--m);}
+.empty{text-align:center;padding:50px 20px;color:var(--m);}
+.empty .ei{font-size:40px;margin-bottom:14px;}
+.empty p{font-size:13px;line-height:1.6;}
+
+/* NOTIF */
+.notif{position:fixed;top:18px;right:18px;z-index:999;background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:11px 16px;font-size:13px;transform:translateX(130%);transition:transform .3s ease;max-width:280px;}
+.notif.show{transform:translateX(0);}
+.notif.ok{border-color:var(--a);color:var(--a);}
+.notif.err{border-color:var(--r);color:var(--r);}
+
+.mode-toggle{display:flex;gap:0;margin-bottom:20px;border-radius:10px;overflow:hidden;border:1px solid var(--b);}
+.mode-btn{flex:1;padding:12px 16px;font-family:'Noto Sans SC',sans-serif;font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s;background:var(--s2);color:var(--m);}
+.mode-btn.active{background:var(--p);color:#fff;}
+.mode-btn:first-child{border-right:1px solid var(--b);}
+.suggest-card{background:var(--s2);border:1.5px solid var(--b);border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .2s;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;}
+.suggest-card:hover{border-color:var(--p);}
+.suggest-card.sel{border-color:var(--a);background:rgba(200,255,0,.06);}
+.suggest-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--b);flex-shrink:0;margin-top:2px;transition:all .2s;}
+.suggest-card.sel .suggest-dot{border-color:var(--a);background:var(--a);}
+.suggest-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.suggest-desc{font-size:12px;color:var(--m);line-height:1.5;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px;}
+</style>
+</head>
+<body>
+<div id="notif" class="notif"></div>
+<div class="wrap">
+
+<!-- API KEY BAR -->
+<div id="apibar" style="background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.3);border-radius:12px;padding:14px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+  <div style="font-size:18px;">🔑</div>
+  <div style="flex:1;min-width:160px;">
+    <div id="apiStatus" style="font-size:13px;font-weight:600;margin-bottom:2px;">请先输入 Groq API Key</div>
+    <div style="font-size:11px;color:var(--m);">去 <a href="https://console.groq.com/keys" target="_blank" style="color:var(--a);">console.groq.com</a> 免费获取，只需输入一次。</div>
+  </div>
+  <div style="display:flex;gap:8px;flex:2;min-width:240px;">
+    <input type="password" id="apiKeyInput" placeholder="gsk_……" style="flex:1;background:var(--s2);border:1px solid var(--b);border-radius:8px;color:var(--t);font-family:'Noto Sans SC',sans-serif;font-size:13px;padding:9px 14px;outline:none;" autocomplete="off">
+    <button onclick="saveKey()" style="background:var(--p);color:#fff;font-family:'Noto Sans SC',sans-serif;font-size:12px;font-weight:700;padding:9px 18px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;">保存</button>
+    <button id="apiClearBtn" onclick="clearKey()" style="display:none;background:none;border:1px solid var(--b);color:var(--m);font-family:'Noto Sans SC',sans-serif;font-size:12px;padding:9px 14px;border-radius:8px;cursor:pointer;">清除</button>
+  </div>
+</div>
+
+<div class="hdr">
+  <div class="hdr-tag">JS Tradventures</div>
+  <h1>UGC 脚本<br><em>工作室</em></h1>
+  <p>贴入 Tally 问卷回答 → AI 解析 → 选 Hook → 生成脚本与拍摄清单</p>
+</div>
+
+<!-- REF BOX - updates dynamically per creator -->
+<div class="ref">
+  <div class="ref-lbl">📹 参考视频风格 — <span id="refBoxCreatorName">默认风格</span></div>
+  <div class="ref-grid">
+    <div class="ref-card"><div class="rl">开场风格</div><div class="rv" id="refBox_hook">反直觉陈述式 — 开口说一句让人意外的结论，逼观众继续看</div></div>
+    <div class="ref-card"><div class="rl">语气风格</div><div class="rv" id="refBox_tone">轻松随意，像跟朋友讲道理，不推销，讲观念</div></div>
+    <div class="ref-card"><div class="rl">结构节奏</div><div class="rv" id="refBox_structure">开场 → 引发共鸣 → 展开故事 → 情绪升华结尾</div></div>
+    <div class="ref-card"><div class="rl">视觉特点</div><div class="rv" id="refBox_visual">大字幕强调重点，单场景对镜头，手势辅助表达</div></div>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="steps">
+  <div class="step active" id="sd0" onclick="goStep(0)"><b>00</b> 参考视频</div>
+  <div class="step" id="sd1" onclick="goStep(1)"><b>01</b> 贴入资料</div>
+  <div class="step" id="sd2" onclick="goStep(2)"><b>02</b> 检查修改</div>
+  <div class="step" id="sd3" onclick="goStep(3)"><b>03</b> 生成脚本</div>
+  <div class="step" id="sd4" onclick="goStep(4)"><b>04</b> 拍摄清单</div>
+</div>
+
+<!-- STEP 0 -->
+<div class="panel on" id="p0">
+  <div class="card">
+    <div class="card-title">参考视频风格</div>
+    <div class="card-sub">每个创作者可以用不同的参考风格。把参考视频的台词贴入，AI 分析风格后用来生成脚本。<br><span style="font-size:12px;color:var(--m);">没有 transcript？去 <a href="https://videotranscriber.ai" target="_blank" style="color:var(--a);">videotranscriber.ai</a> 免费生成，把视频上传进那个网站，复制结果贴到这里。</span></div>
+
+    <div class="tabs" id="tabs0"></div>
+
+    <!-- DEFAULT STYLE NOTICE -->
+    <div id="defaultStyleNotice" style="background:rgba(200,255,0,.06);border:1px solid rgba(200,255,0,.2);border-radius:10px;padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <div style="font-size:20px;">⚡</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:var(--a);margin-bottom:3px;">已有默认参考风格</div>
+        <div style="font-size:12px;color:var(--m);line-height:1.5;">反直觉陈述式开场，车内 casual 讲道理风格，Hook → 共鸣 → 故事 → 结论升华结构。如要换风格，在下方贴入新 transcript。</div>
+      </div>
+      <button onclick="useDefaultStyle()" style="background:var(--a);color:var(--bg);font-family:'Noto Sans SC',sans-serif;font-size:12px;font-weight:700;padding:8px 16px;border-radius:7px;border:none;cursor:pointer;white-space:nowrap;">使用默认风格</button>
+    </div>
+
+    <!-- TRANSCRIPT INPUT -->
+    <div style="background:rgba(124,77,255,.05);border:1.5px dashed rgba(124,77,255,.35);border-radius:12px;padding:20px;margin-bottom:18px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--p);margin-bottom:6px;">📝 贴入新的参考视频台词</div>
+      <div style="font-size:12px;color:var(--m);margin-bottom:10px;line-height:1.6;">贴入后点「AI 分析风格」，分析结果会替换掉默认风格，用于这位创作者的脚本生成。</div>
+      <textarea id="refTranscript" style="min-height:140px;font-size:13px;line-height:1.65;" placeholder="把参考视频的完整台词贴在这里……&#10;&#10;例如：&#10;People are PISSED at Google's new rules.&#10;And you literally can't rank without reviews…&#10;（从 videotranscriber.ai 复制过来）" oninput="C().refTranscript=this.value"></textarea>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;">
+        <button class="btn-parse" id="refAnalyzeBtn" onclick="analyzeRef()">✦ AI 分析风格</button>
+        <div class="status" id="refAnalyzeStatus"></div>
+      </div>
+    </div>
+
+    <!-- ANALYSIS RESULT -->
+    <div id="refAnalysisResult" style="display:none;background:var(--s2);border-radius:10px;border:1px solid var(--b);overflow:hidden;margin-bottom:16px;">
+      <div style="background:rgba(124,77,255,.1);padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--p);border-bottom:1px solid var(--b);">✓ 风格分析结果 — 将用于生成脚本</div>
+      <div id="refAnalysisGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--b);"></div>
+    </div>
+
+    <div class="brow">
+      <button class="btn btn-a" onclick="goStep(1)">下一步：贴入创作者资料 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div class="panel" id="p1">
+  <div class="card">
+    <div class="card-title">选择脚本类型</div>
+    <div class="card-sub">选择要生成的脚本类型，然后填写对应的内容。</div>
+
+    <!-- MODE TOGGLE -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeStoryBtn" onclick="setMode('story')">🎭 故事型 UGC<br><span style="font-size:11px;font-weight:400;opacity:.8;">创作者真实故事</span></button>
+      <button class="mode-btn" id="modeKnowBtn" onclick="setMode('knowledge')">📚 知识型 UGC<br><span style="font-size:11px;font-weight:400;opacity:.8;">教学 / 交易知识</span></button>
+    </div>
+
+    <div class="tabs" id="tabs1"></div>
+
+    <div class="paste-box">
+      <div class="paste-lbl">📋 贴入 Tally 问卷回答</div>
+      <div class="paste-hint">
+        用 Mac「预览」打开 PDF → <kbd>⌘A</kbd> 全选 → <kbd>⌘C</kbd> 复制 → 贴到下面<br>
+        文字就算是乱的或反转的也没关系，AI 会自动读懂。
+      </div>
+      <textarea id="pasteArea" placeholder="把复制的内容贴在这里……"></textarea>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;">
+        <button class="btn-parse" id="parseBtn" onclick="doParse()">✦ AI 自动解析</button>
+        <div class="status" id="parseStatus"></div>
+      </div>
+    </div>
+
+    <!-- KNOWLEDGE MODE -->
+    <div id="knowledgeSection" style="display:none;">
+      <div style="background:linear-gradient(135deg,rgba(200,255,0,.07),rgba(124,77,255,.04));border:1.5px dashed rgba(200,255,0,.3);border-radius:12px;padding:20px;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a);margin-bottom:8px;">📚 知识点主题</div>
+        <div style="font-size:12px;color:var(--m);margin-bottom:10px;line-height:1.6;">输入你想教的主题，AI 会建议知识点，你选一个或自己写。</div>
+        <input type="text" id="knowledgeTopic" placeholder="例如：怎么看 K 线、几时进场、RSI 指标、支撑位和阻力位……" style="margin-bottom:12px;" oninput="C().knowTopic=this.value">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn-parse" id="suggestBtn" onclick="suggestPoints()"><span id="suggestBtnTxt">✦ AI 建议知识点</span></button>
+          <div class="status" id="suggestStatus"></div>
+        </div>
+      </div>
+
+      <!-- SUGGESTIONS -->
+      <div id="suggestionsBox" style="display:none;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin-bottom:10px;">选一个知识点，或在下方自己写：</div>
+        <div id="suggestionsList"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin:12px 0 8px;">或者自己写：</div>
+        <textarea id="customKnowPoint" style="min-height:70px;font-size:13px;" placeholder="自己描述想讲的知识点……" oninput="C().knowPoint=this.value;C().knowPointConfirmed=true;"></textarea>
+      </div>
+    </div>
+
+    <!-- STORY MODE PASTE -->
+    <div id="storySection">
+    <div class="paste-box">
+      <div class="paste-lbl">📋 贴入 Tally 问卷回答</div>
+      <div class="paste-hint">
+        用 Mac「预览」打开 PDF → <kbd>⌘A</kbd> 全选 → <kbd>⌘C</kbd> 复制 → 贴到下面<br>
+        文字就算是乱的或反转的也没关系，AI 会自动读懂。
+      </div>
+      <textarea id="pasteArea" placeholder="把复制的内容贴在这里……"></textarea>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;">
+        <button class="btn-parse" id="parseBtn" onclick="doParse()">✦ AI 自动解析</button>
+        <div class="status" id="parseStatus"></div>
+      </div>
+    </div>
+
+    <!-- KNOWLEDGE MODE -->
+    <div id="knowledgeSection" style="display:none;">
+      <div style="background:linear-gradient(135deg,rgba(200,255,0,.07),rgba(124,77,255,.04));border:1.5px dashed rgba(200,255,0,.3);border-radius:12px;padding:20px;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--a);margin-bottom:8px;">📚 知识点主题</div>
+        <div style="font-size:12px;color:var(--m);margin-bottom:10px;line-height:1.6;">输入你想教的主题，AI 会建议知识点，你选一个或自己写。</div>
+        <input type="text" id="knowledgeTopic" placeholder="例如：怎么看 K 线、几时进场、RSI 指标、支撑位和阻力位……" style="margin-bottom:12px;" oninput="C().knowTopic=this.value">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn-parse" id="suggestBtn" onclick="suggestPoints()"><span id="suggestBtnTxt">✦ AI 建议知识点</span></button>
+          <div class="status" id="suggestStatus"></div>
+        </div>
+      </div>
+
+      <!-- SUGGESTIONS -->
+      <div id="suggestionsBox" style="display:none;margin-bottom:18px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin-bottom:10px;">选一个知识点，或在下方自己写：</div>
+        <div id="suggestionsList"></div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin:12px 0 8px;">或者自己写：</div>
+        <textarea id="customKnowPoint" style="min-height:70px;font-size:13px;" placeholder="自己描述想讲的知识点……" oninput="C().knowPoint=this.value;C().knowPointConfirmed=true;"></textarea>
+      </div>
+    </div>
+
+    <!-- STORY MODE PASTE -->
+    <div id="storySection">
+    <div class="paste-box">
+    </div><!-- end storySection -->
+
+    <div class="notes-box">
+      <div class="notes-lbl">✏️ 你的补充备注</div>
+      <div class="fg">
+        <label>创作者代号</label>
+        <input type="text" id="codenameInput" placeholder="阿伟、Creator A……" oninput="updateCodename(this.value)">
+      </div>
+      <div class="fg" style="margin-bottom:0;">
+        <label>你想特别强调的重点</label>
+        <textarea id="notesInput" placeholder="单亲妈妈、想强调收入数字、特别的转折点……" style="min-height:70px;"></textarea>
+      </div>
+    </div>
+
+    <div class="brow">
+      <button class="btn btn-s" onclick="addCreator()">＋ 新增创作者</button>
+      <button class="btn btn-a" onclick="goToStep2()">下一步：检查修改 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="panel" id="p2">
+  <div class="card">
+    <div class="card-title">检查与修改</div>
+    <div class="card-sub">以下内容由 AI 自动填入，请检查是否准确，可以直接修改。确认后生成 Hook 选项。</div>
+    <div class="tabs" id="tabs2"></div>
+    <div id="editForm"></div>
+
+    <!-- HOOK SECTION -->
+    <div class="hook-box" id="hookBox" style="display:none;">
+      <div class="hook-lbl">🪝 选择开场 Hook</div>
+      <div style="font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.6;">
+        AI 根据你的故事深度分析，生成 3 个专属 Hook 选项。<br>
+        <span style="color:var(--a);font-size:12px;">选一个点击确认，或在下方自己写。脚本会根据你最终选定的 Hook 生成。</span>
+      </div>
+
+      <!-- AI GENERATED OPTIONS -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--p);margin-bottom:10px;">AI 生成选项</div>
+      <div id="hookOpts" style="margin-bottom:14px;"></div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px;">
+        <button class="btn-parse" id="regenBtn" onclick="genHooks()" style="font-size:12px;padding:8px 16px;"><span id="regenTxt">↺ 重新生成 3 个</span></button>
+        <div class="status" id="hookStatus"></div>
+      </div>
+
+      <!-- CUSTOM OPTION -->
+      <div style="background:var(--s1);border:1.5px dashed rgba(200,255,0,.3);border-radius:10px;padding:16px;margin-bottom:4px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--a);margin-bottom:8px;">✏️ 自己写 Hook</div>
+        <textarea id="customHook" style="min-height:56px;font-size:14px;border-color:rgba(200,255,0,.2);" placeholder="在这里输入你自己想要的 Hook……" oninput="useCustomHook(this.value)"></textarea>
+        <button onclick="confirmCustomHook()" style="margin-top:10px;background:rgba(200,255,0,.15);border:1px solid rgba(200,255,0,.3);color:var(--a);font-family:'Noto Sans SC',sans-serif;font-size:12px;font-weight:700;padding:7px 16px;border-radius:7px;cursor:pointer;">✓ 使用这个 Hook</button>
+      </div>
+
+      <!-- CONFIRMED HOOK DISPLAY -->
+      <div id="confirmedHookDisplay" style="display:none;background:rgba(200,255,0,.07);border:1px solid rgba(200,255,0,.3);border-radius:10px;padding:14px 16px;margin-top:14px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--a);margin-bottom:6px;">✓ 已选定 Hook</div>
+        <div id="confirmedHookText" style="font-size:15px;font-weight:600;color:var(--t);line-height:1.5;"></div>
+        <button onclick="clearConfirmedHook()" style="margin-top:8px;background:none;border:none;color:var(--m);font-size:11px;cursor:pointer;text-decoration:underline;">重新选择</button>
+      </div>
+    </div>
+
+    <div class="brow">
+      <button class="btn btn-s" onclick="goStep(1)">← 返回</button>
+      <button class="btn btn-a" id="showHookBtn" onclick="showHooks()">✦ 确认内容，生成 Hook →</button>
+      <button class="btn btn-gen" id="genScriptBtn" onclick="generateCurrent()" style="display:none;">✦ 生成脚本</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="panel" id="p3">
+  <div id="scriptsOut"><div class="empty"><div class="ei">✦</div><p>还没有脚本。<br>完成前两步后点「生成所有脚本」。</p></div></div>
+  <div id="polishStatus" style="font-size:13px;color:var(--m);padding:0 4px 8px;min-height:20px;"></div>
+  <div class="brow">
+    <button class="btn btn-s" onclick="goStep(2)">← 返回修改</button>
+    <button class="btn btn-s" id="polishBtn" onclick="polishScripts()" style="border-color:var(--p);color:var(--p);">✦ AI 润色检查脚本</button>
+    <button class="btn btn-gen" onclick="confirmAndGenShots()">✓ 确认脚本，生成拍摄清单 →</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="panel" id="p4">
+  <div id="shotOut"><div class="empty"><div class="ei">🎬</div><p>先生成脚本，拍摄清单会出现在这里。</p></div></div>
+  <div class="brow">
+    <button class="btn btn-s" onclick="goStep(3)">← 返回脚本</button>
+    <button class="btn btn-a" onclick="copyAll()">📋 复制所有脚本</button>
+  </div>
+</div>
+
+</div><!-- end wrap -->
+
+<script>
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let creators = [];
+let ai = 0; // activeIndex
+let gd = {}; // generated data
+
+function C() { return creators[ai]; }
+
+function blank(n) {
+  return {
+    id: Date.now() + Math.random(),
+    codename: '创作者 ' + n,
+    mode: 'story',
+    rawText: '',
+    notes: '',
+    parsed: false,
+    knowTopic: '',
+    knowPoint: '',
+    knowPointConfirmed: false,
+    knowSuggestions: [],
+    hooks: [],
+    selectedHook: '',
+    hooksGenerated: false,
+    refVideoFile: null,
+    refTranscript: '',
+    refAnalysis: null, // { hookStyle, tone, structure, visual }
+    f: { name:'', job:'', age:'', before:'', fear:'', howmet:'', decision:'', after:'', jst_help:'', message:'', extra:'' }
+  };
+}
+
+function init() { addCreator(); }
+
+function addCreator() {
+  creators.push(blank(creators.length + 1));
+  ai = creators.length - 1;
+  syncUI();
+}
+
+function removeCreator(i) {
+  if (creators.length <= 1) { showN('至少保留一位创作者', false); return; }
+  creators.splice(i, 1);
+  ai = Math.min(ai, creators.length - 1);
+  syncUI();
+}
+
+function setActive(i) {
+  saveStep1();
+  ai = i;
+  syncUI();
+}
+
+// ─────────────────────────────────────────────
+// SYNC UI
+// ─────────────────────────────────────────────
+function syncUI() {
+  renderTabs();
+  syncRefUI();
+  syncStep1Fields();
+  syncModeUI();
+  renderEditForm();
+  renderHookUI();
+}
+
+function renderTabs() {
+  ['tabs0','tabs1','tabs2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = creators.map((c,i) => {
+      const cls = ['tab', i===ai?'on':'', c.parsed?'ok':''].filter(Boolean).join(' ');
+      return `<button class="${cls}" onclick="setActive(${i})">${esc(c.codename)}${c.parsed?' ✓':''}</button>`;
+    }).join('') + `<button class="tab add" onclick="addCreator()">＋ 新增</button>`;
+  });
+}
+
+function syncStep1Fields() {
+  const c = C();
+  const pa = document.getElementById('pasteArea');
+  const ci = document.getElementById('codenameInput');
+  const ni = document.getElementById('notesInput');
+  const ps = document.getElementById('parseStatus');
+  if (pa) pa.value = c.rawText || '';
+  if (ci) ci.value = c.codename || '';
+  if (ni) ni.value = c.notes || '';
+  if (ps) {
+    ps.textContent = c.parsed ? '✓ 已解析' : '';
+    ps.className = 'status' + (c.parsed ? ' ok' : '');
+  }
+}
+
+function saveStep1() {
+  const c = C();
+  const rt = document.getElementById('refTranscript');
+  const pa = document.getElementById('pasteArea');
+  const ci = document.getElementById('codenameInput');
+  const ni = document.getElementById('notesInput');
+  if (rt) c.refTranscript = rt.value;
+  if (pa) c.rawText = pa.value;
+  if (ci && ci.value.trim()) c.codename = ci.value.trim();
+  if (ni) c.notes = ni.value;
+}
+
+function updateCodename(v) {
+  C().codename = v || ('创作者 ' + (ai+1));
+  renderTabs();
+}
+
+// ─────────────────────────────────────────────
+// REFERENCE VIDEO
+// ─────────────────────────────────────────────
+function triggerRefUpload() {
+  document.getElementById('refVideoInput').click();
+}
+
+function handleRefDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) loadRefFile(file);
+  else showN('请上传视频文件', false);
+}
+
+function handleRefVideo(input) {
+  const file = input.files[0];
+  if (file) loadRefFile(file);
+}
+
+function loadRefFile(file) {
+  const c = C();
+  c.refVideoFile = file;
+  // Show file info
+  const area = document.getElementById('refUploadArea');
+  const info = document.getElementById('refFileInfo');
+  const nameEl = document.getElementById('refFileName');
+  const sizeEl = document.getElementById('refFileSize');
+  if (area) area.style.display = 'none';
+  if (info) { info.style.display = 'flex'; }
+  if (nameEl) nameEl.textContent = file.name;
+  const kb = file.size > 1048576 ? (file.size/1048576).toFixed(1)+' MB' : Math.round(file.size/1024)+' KB';
+  if (sizeEl) sizeEl.textContent = kb;
+  showN('✓ 视频已上传', true);
+}
+
+function useDefaultStyle() {
+  const defaultAnalysis = {
+    hookStyle: '反直觉陈述式 — 开口说一句让人意外的结论，例如「不给家用，才帮得到你家人」，逼观众继续看下去',
+    tone: '轻松随意，像在车里跟朋友讲道理。不推销，讲观念。有停顿感，慢条斯理，有手势辅助表达。',
+    structure: '开场一句反直觉话 → 引发共鸣说出观众处境 → 主人公亲身经历展开 → 情绪升华结尾，有停顿感',
+    visual: '单场景 talking head 对镜头。大字幕强调重点词。自然光，手持或固定手机拍摄。'
+  };
+  C().refAnalysis = defaultAnalysis;
+  showRefAnalysis(defaultAnalysis);
+  const st = document.getElementById('refAnalyzeStatus');
+  if (st) { st.textContent = '✓ 已使用默认风格'; st.className = 'status ok'; }
+  showN('✓ 已套用默认风格', true);
+}
+
+function removeRefVideo() {
+  const c = C();
+  c.refVideoFile = null;
+  const area = document.getElementById('refUploadArea');
+  const info = document.getElementById('refFileInfo');
+  const input = document.getElementById('refVideoInput');
+  if (area) area.style.display = 'block';
+  if (info) info.style.display = 'none';
+  if (input) input.value = '';
+}
+
+async function analyzeRef() {
+  const c = C();
+  // Always read fresh from textarea
+  const ta = document.getElementById('refTranscript');
+  if (ta) c.refTranscript = ta.value.trim();
+
+  if (!c.refTranscript) {
+    showN('请先贴入视频台词', false); return;
+  }
+
+  const btn = document.getElementById('refAnalyzeBtn');
+  const st = document.getElementById('refAnalyzeStatus');
+  btn.disabled = true;
+  st.textContent = 'AI 正在分析风格…';
+  st.className = 'status loading';
+
+  try {
+    let analysisPrompt = refAnalyzePrompt(c.refTranscript);
+
+    // If video uploaded, extract frames for visual analysis
+    if (c.refVideoFile) {
+      st.textContent = '正在提取视频画面…';
+      try {
+        const frames = await extractVideoFrames(c.refVideoFile);
+        if (frames.length > 0) {
+          analysisPrompt = refAnalyzePromptWithFrames(c.refTranscript, frames.length);
+        }
+      } catch(e) { /* continue without frames */ }
+    }
+
+    st.textContent = 'AI 正在分析…';
+    const result = await ask(analysisPrompt);
+    const analysis = parseRefAnalysis(result);
+    c.refAnalysis = analysis;
+    showRefAnalysis(analysis);
+    st.textContent = '✓ 分析完成';
+    st.className = 'status ok';
+    showN('✓ 风格分析完成', true);
+  } catch(e) {
+    st.textContent = '分析失败：' + e.message;
+    st.className = 'status err';
+    showN('分析失败', false);
+  }
+  btn.disabled = false;
+}
+
+async function extractVideoFrames(file) {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
+    video.muted = true;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const frames = [];
+
+    video.onloadedmetadata = () => {
+      const times = [0.5, video.duration * 0.25, video.duration * 0.5, video.duration * 0.75];
+      let captured = 0;
+      times.forEach((t, i) => {
+        const v2 = document.createElement('video');
+        v2.src = video.src;
+        v2.muted = true;
+        v2.currentTime = t;
+        v2.onseeked = () => {
+          canvas.width = 400;
+          canvas.height = Math.round(400 * v2.videoHeight / v2.videoWidth);
+          ctx.drawImage(v2, 0, 0, canvas.width, canvas.height);
+          frames[i] = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+          captured++;
+          if (captured === times.length) resolve(frames.filter(Boolean));
+        };
+        v2.onerror = () => { captured++; if (captured === times.length) resolve(frames.filter(Boolean)); };
+        v2.load();
+      });
+    };
+    video.onerror = () => resolve([]);
+    video.load();
+  });
+}
+
+function refAnalyzePrompt(transcript) {
+  return `你是一位专业的短视频风格分析师。
+
+以下是参考视频的台词：
+---
+${transcript}
+---
+
+分析这条视频的说话风格，每个字段用标签开头：
+
+[HOOK] 开场方式：第一句话是什么类型？（反直觉/数字冲击/争议性/故事开头/直接结论）举出原文第一句话，说明为什么有效。
+
+[TONE] 说话方式（最重要）：
+- 句子平均长度：短句/中句/长句？
+- 停顿方式：怎么断句？
+- 语气：自信/随意/叙事/教学/朋友分享？
+- 有没有口头禅或重复用法？
+- 举出2-3个最能代表这个风格的原文句子
+
+[STRUCTURE] 内容结构：怎么开始，中间怎么走，结尾怎么收？有没有特别的过渡方式？
+
+[VISUAL] 视觉风格：适合什么拍摄方式？场景、字幕、B-roll 类型。
+
+每个标签后直接写，不要编号。`;
+}
+
+function refAnalyzePromptWithFrames(transcript, frameCount) {
+  return refAnalyzePrompt(transcript) + `
+
+（已提取 ${frameCount} 个视频画面帧辅助分析视觉风格）`;
+}
+
+function parseRefAnalysis(text) {
+  const get = (label) => {
+    const tag = '[' + label + ']';
+    const i = text.indexOf(tag);
+    if (i === -1) return '';
+    const start = i + tag.length;
+    const labels = ['[HOOK]','[TONE]','[STRUCTURE]','[VISUAL]'];
+    let end = text.length;
+    for (const o of labels) {
+      if (o === tag) continue;
+      const oi = text.indexOf(o, start);
+      if (oi > -1 && oi < end) end = oi;
+    }
+    return text.slice(start, end).trim();
+  };
+  return {
+    hookStyle: get('HOOK') || text.slice(0,300),
+    tone:      get('TONE'),
+    structure: get('STRUCTURE'),
+    visual:    get('VISUAL'),
+    raw:       text
+  };
+}
+
+function showRefAnalysis(analysis) {
+  const result = document.getElementById('refAnalysisResult');
+  const grid = document.getElementById('refAnalysisGrid');
+  if (!result || !grid) return;
+  // Also update top ref box immediately
+  updateTopRefBox(C());
+  const items = [
+    ['🪝 开场 Hook 风格', analysis.hookStyle],
+    ['🎙️ 说话语气与节奏', analysis.tone],
+    ['📋 内容结构', analysis.structure],
+    ['🎬 视觉风格', analysis.visual]
+  ];
+  grid.innerHTML = items.map(([label, val]) => `
+    <div style="background:var(--s2);padding:14px 16px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin-bottom:6px;">${label}</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--t);">${esc(val || '未能分析')}</div>
+    </div>
+  `).join('');
+  result.style.display = 'block';
+}
+
+// ─────────────────────────────────────────────
+// PARSE
+// ─────────────────────────────────────────────
+// PARSE
+// ─────────────────────────────────────────────
+async function doParse() {
+  // Read directly from textarea — no saveStep1 needed
+  const c = C();
+  const pa = document.getElementById('pasteArea');
+  const raw = pa ? pa.value.trim() : '';
+
+  if (!raw) { showN('请先贴入问卷内容', false); return; }
+
+  const btn = document.getElementById('parseBtn');
+  const st = document.getElementById('parseStatus');
+  btn.disabled = true;
+  st.textContent = 'AI 正在解析…';
+  st.className = 'status loading';
+
+  try {
+    const result = await ask(parsePrompt(raw, c.notes));
+    fillFromResult(c, result);
+    c.rawText = raw;
+    c.parsed = true;
+    renderTabs();
+    renderEditForm();
+    st.textContent = '✓ 解析完成，字段已自动填入';
+    st.className = 'status ok';
+    showN('✓ 解析完成', true);
+  } catch(e) {
+    st.textContent = '解析失败：' + e.message;
+    st.className = 'status err';
+    showN('解析失败', false);
+  }
+  btn.disabled = false;
+}
+
+function parsePrompt(raw, notes) {
+  return `以下是从 Tally 问卷回答复制出来的文字。注意：文字可能是反转的、乱序的或包含乱码，请自动识别并正确理解内容，提取创作者填写的所有信息。
+
+内容：
+---
+${raw.slice(0, 6000)}
+---
+${notes ? '我的额外备注：' + notes : ''}
+
+请严格按以下格式输出，每行一个字段，没有信息留空：
+[NAME] 姓名
+[JOB] 职业
+[AGE] 年龄层（只能是：18-24岁 / 25-30岁 / 30-40岁 / 40岁以上）
+[BEFORE] 加入前的困境
+[FEAR] 当时的担忧
+[HOWMET] 如何认识JST
+[DECISION] 决定加入的原因
+[AFTER] 加入后的改变
+[JSTHELP] JST最大帮助
+[MESSAGE] 想对自己说的话
+[EXTRA] 其他补充
+
+只输出这11行，不要其他文字。`;
+}
+
+function fillFromResult(c, text) {
+  const get = (label) => {
+    const tag = '[' + label + ']';
+    const idx = text.indexOf(tag);
+    if (idx === -1) return '';
+    const start = idx + tag.length;
+    const nextBracket = text.indexOf('[', start);
+    const end = nextBracket > -1 ? nextBracket : text.length;
+    return text.slice(start, end).trim();
+  };
+  c.f.name     = get('NAME');
+  c.f.job      = get('JOB');
+  c.f.age      = get('AGE');
+  c.f.before   = get('BEFORE');
+  c.f.fear     = get('FEAR');
+  c.f.howmet   = get('HOWMET');
+  c.f.decision = get('DECISION');
+  c.f.after    = get('AFTER');
+  c.f.jst_help = get('JSTHELP');
+  c.f.message  = get('MESSAGE');
+  c.f.extra    = get('EXTRA');
+  if (c.f.name && c.codename.startsWith('创作者')) {
+    c.codename = c.f.name;
+    const ci = document.getElementById('codenameInput');
+    if (ci) ci.value = c.f.name;
+  }
+}
+
+// ─────────────────────────────────────────────
+// EDIT FORM (Step 2)
+// ─────────────────────────────────────────────
+function renderEditForm() {
+  const el = document.getElementById('editForm');
+  if (!el) return;
+  const c = C();
+  const f = c.f;
+  el.innerHTML = `
+    <div class="fsec">基本信息</div>
+    <div class="row2">
+      <div class="fg"><label>姓名 <span class="req">*</span><span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.name)}" oninput="C().f.name=this.value" placeholder="阿伟……"></div>
+      <div class="fg"><label>职业<span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.job)}" oninput="C().f.job=this.value" placeholder="上班族……"></div>
+    </div>
+    <div class="fg"><label>年龄层<span class="tag tag-cr">创作者</span></label>
+      <select onchange="C().f.age=this.value">
+        <option value="" ${!f.age?'selected':''}>— 未填写 —</option>
+        <option value="18-24岁" ${f.age==='18-24岁'?'selected':''}>18–24 岁</option>
+        <option value="25-30岁" ${f.age==='25-30岁'?'selected':''}>25–30 岁</option>
+        <option value="30-40岁" ${f.age==='30-40岁'?'selected':''}>30–40 岁</option>
+        <option value="40岁以上" ${f.age==='40岁以上'?'selected':''}>40 岁以上</option>
+      </select></div>
+
+    <div class="fsec">加入前</div>
+    <div class="fg"><label>加入前的困境 <span class="req">*</span><span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.before=this.value">${esc(f.before)}</textarea></div>
+    <div class="fg"><label>当时的担忧<span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.fear=this.value" style="min-height:60px;">${esc(f.fear)}</textarea></div>
+
+    <div class="fsec">认识 JST</div>
+    <div class="row2">
+      <div class="fg"><label>如何认识 JST<span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.howmet)}" oninput="C().f.howmet=this.value"></div>
+      <div class="fg"><label>决定加入的原因<span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.decision)}" oninput="C().f.decision=this.value"></div>
+    </div>
+
+    <div class="fsec">加入后</div>
+    <div class="fg"><label>加入后的改变 <span class="req">*</span><span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.after=this.value">${esc(f.after)}</textarea></div>
+    <div class="fg"><label>JST 最大帮助<span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.jst_help=this.value" style="min-height:60px;">${esc(f.jst_help)}</textarea></div>
+    <div class="fg"><label>想对自己说的话<span class="tag tag-cr">创作者</span></label>
+      <input type="text" value="${esc(f.message)}" oninput="C().f.message=this.value"></div>
+
+    <div class="fsec">你的备注</div>
+    <div class="fg"><label>特别强调的重点<span class="tag tag-you">你</span></label>
+      <textarea oninput="C().notes=this.value">${esc(c.notes)}</textarea></div>
+    <div class="fg"><label>其他补充<span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.extra=this.value" style="min-height:60px;">${esc(f.extra)}</textarea></div>
+    <button class="btn btn-d" style="margin-top:4px;" onclick="removeCreator(${ai})">✕ 删除此创作者</button>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// HOOKS
+// ─────────────────────────────────────────────
+function showHooks() {
+  const c = C();
+  if (!c.f.name && !c.f.before && !c.f.after) {
+    showN('请先填写创作者故事内容', false); return;
+  }
+  document.getElementById('hookBox').style.display = 'block';
+  document.getElementById('showHookBtn').style.display = 'none';
+  document.getElementById('genScriptBtn').style.display = 'flex';
+  document.getElementById('hookBox').scrollIntoView({ behavior:'smooth', block:'start' });
+  if (!c.hooksGenerated) genHooks();
+}
+
+async function genHooks() {
+  const c = C();
+  const btn = document.getElementById('regenBtn');
+  const st = document.getElementById('hookStatus');
+  const txt = document.getElementById('regenTxt');
+  btn.disabled = true;
+  txt.textContent = '生成中…';
+  st.textContent = '';
+
+  try {
+    const result = await ask(hookPrompt(c));
+    const lines = result.split('\n').map(l => l.trim()).filter(l => l.length > 4);
+    const hooks = lines
+      .filter(l => /^[1-3][.、)\s]/.test(l))
+      .map(l => l.replace(/^[1-3][.、)\s]+/, '').trim())
+      .slice(0, 3);
+    c.hooks = hooks.length >= 1 ? hooks : lines.slice(0, 3);
+    c.hooksGenerated = true;
+    renderHookUI();
+    st.textContent = '✓ 生成完成';
+  } catch(e) {
+    st.textContent = '生成失败，请重试';
+  }
+  btn.disabled = false;
+  txt.textContent = '↺ 重新生成';
+}
+
+function hookPrompt(c) {
+  return `你是一位专业的短视频开场文案撰写人，专门为马来西亚华人社群制作 UGC 内容。
+
+你的任务：根据以下创作者的真实故事，深度分析，生成 3 个强力 Hook。
+
+【创作者完整故事】
+姓名：${c.f.name}
+职业：${c.f.job}
+加入JST前的状态：${c.f.before}
+当时的担忧：${c.f.fear}
+加入后的改变：${c.f.after}
+JST带来的最大帮助：${c.f.jst_help}
+想对自己说的话：${c.f.message}
+
+【分析步骤】（内部思考，不要输出这部分）
+1. 找出这个故事最独特的转折点是什么
+2. 找出观众最容易产生共鸣的痛点
+3. 找出最反直觉、最出乎意料的结论
+
+【Hook 要求】
+- 必须和这个创作者的具体故事高度相关，不能套用通用模板
+- 反直觉陈述式：说一句让人意外的话，逻辑上看似矛盾，让人停下来想
+- 参考风格：「不给家用，才帮得到你家人」、「我亏了钱，才开始真正赚钱」
+- 全程纯简体中文，每句15字以内
+- 3个方向各不同：可以从痛点切入、从结果切入、从观念切入
+
+只输出三行：
+1. （第一个hook）
+2. （第二个hook）
+3. （第三个hook）`;
+}
+
+function renderHookUI() {
+  const c = C();
+  const container = document.getElementById('hookOpts');
+  if (!container) return;
+  container.innerHTML = c.hooks.map((h, i) => `
+    <div class="hook-opt ${c.selectedHook===h?'sel':''}" onclick="selectHook(${i})">
+      <div class="hook-dot"><div class="hook-dot-inner"></div></div>
+      <div class="hook-text">${esc(h)}</div>
+      ${c.selectedHook===h ? '<span style="font-size:10px;color:var(--a);margin-left:auto;font-weight:700;white-space:nowrap;">✓ 已选</span>' : ''}
+    </div>
+  `).join('');
+  // Restore confirmed display if hook already selected
+  if (c.selectedHook) {
+    showConfirmedHook(c.selectedHook);
+  }
+}
+
+function selectHook(i) {
+  const c = C();
+  c.selectedHook = c.hooks[i];
+  renderHookUI();
+  // Show confirmed display
+  showConfirmedHook(c.selectedHook);
+}
+
+function useCustomHook(val) {
+  C().selectedHook = val;
+}
+
+function confirmCustomHook() {
+  const val = document.getElementById('customHook').value.trim();
+  if (!val) { showN('请先输入你的 Hook', false); return; }
+  C().selectedHook = val;
+  // Deselect AI options
+  C().hooks.forEach((h,i) => {});
+  renderHookUI();
+  showConfirmedHook(val);
+}
+
+function showConfirmedHook(text) {
+  const display = document.getElementById('confirmedHookDisplay');
+  const textEl = document.getElementById('confirmedHookText');
+  if (display) display.style.display = 'block';
+  if (textEl) textEl.textContent = text;
+  // Show generate script button
+  document.getElementById('genScriptBtn').style.display = 'flex';
+}
+
+function clearConfirmedHook() {
+  C().selectedHook = '';
+  const display = document.getElementById('confirmedHookDisplay');
+  if (display) display.style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+// GENERATE SCRIPTS
+// ─────────────────────────────────────────────
+async function generateCurrent() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+  const c = C();
+  const _mode = c.mode || 'story';
+  if (_mode === 'story' && !c.f.name && !c.f.before && !c.f.after) {
+    showN('请先填写创作者的故事内容', false); return;
+  }
+  const mode = c.mode || 'story';
+  const name = mode === 'knowledge' ? (c.knowTopic || '知识型脚本') : (c.f.name || c.codename || ('创作者' + (ai+1)));
+
+  // Validate based on mode
+  if (mode === 'knowledge' && !c.knowPoint && !c.knowTopic) {
+    showN('请先输入知识点主题', false); return;
+  }
+
+  goStep(3);
+  const out = document.getElementById('scriptsOut');
+  out.innerHTML = `<div class="lw"><div class="sp"></div><p>正在生成「${esc(name)}」脚本……</p></div>`;
+  try {
+    const prompt = (mode === 'knowledge') ? knowledgeScriptPrompt(c) : scriptPrompt(c);
+    const script = await ask(prompt);
+    gd[c.id] = { script, shots: null };
+    out.innerHTML = buildCard(c, ai, script);
+    showN('✦ 脚本已生成', true);
+  } catch(e) {
+    out.innerHTML = `<div class="card"><div class="card-title">${esc(name)}</div><p style="color:var(--r);font-size:13px;margin-top:8px;">生成失败：${e.message}</p></div>`;
+    showN('生成失败', false);
+  }
+}
+
+async function generateAll() {
+  await generateCurrent();
+}
+
+function scriptPrompt(c) {
+  const hook = c.selectedHook || (c.hooks[0] || '');
+  const transcript = c.refTranscript ? c.refTranscript.slice(0, 800) : '';
+  const analysis = c.refAnalysis || {};
+
+  // Build style examples by analyzing the ACTUAL transcript sentences
+  const styleSection = transcript ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【参考台词 — 你必须模仿这个人说话的方式】
+
+${transcript}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+仔细读完上面的台词，然后回答这几个问题（只在脑子里回答，不要输出）：
+① 这个人的句子平均有多长？（短句/中句/长句）
+② 他说话有没有停顿感？怎么停顿的？
+③ 他有没有直接说数字或具体例子？
+④ 他的开场是怎么抓住你的？
+⑤ 他的语气是自信的？随意的？还是叙事的？
+
+然后，写脚本时完全复制那种说话感觉。
+不是复制内容，是复制说话的节奏、句子的长短、停顿的方式。
+
+分析结果参考：
+- 开场风格：${analysis.hookStyle || '直接说结论'}
+- 说话语气：${analysis.tone || '口语化，自然'}
+- 内容结构：${analysis.structure || '开场 → 展开 → 结尾'}
+` : `
+说话要像朋友聊天：短句、直接、有停顿、不用书面语。
+`;
+
+  return `你是一位专门写马来西亚华人 UGC 短视频脚本的写手。
+
+${styleSection}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+创作者的真实资料：
+姓名：${c.f.name || c.codename}
+职业：${c.f.job}
+年龄层：${c.f.age}
+加入前的处境：${c.f.before}
+当时最担心的：${c.f.fear}
+怎么认识 JS Tradventures：${c.f.howmet}
+加入后的改变：${c.f.after}
+最大的帮助：${c.f.jst_help}
+想对自己说的话：${c.f.message}
+其他：${c.notes}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+写之前先做这件事：
+从上面的资料里找出最具体、最真实的细节，例如：
+- 加入前是什么状态？当时有什么具体的事情发生？
+- 亏钱是什么感觉？当时在想什么？
+- 加入后第一个改变是什么？有没有具体的数字或事件？
+把这些细节展开写，不要概括。
+
+写作规则：
+① 品牌名称只写「JS Tradventures」，绝对不可以写「JST」
+② 纯简体中文，不加英文或马来文
+③ 整体念出来 75-90 秒，每段都要充分展开
+④ 绝对禁止：「在人生道路上」「深刻体会」「面对挑战」「深感」「令我」「使我」「不禁」「由衷」「满怀」「踏上」
+⑤ 段与段之间要有自然的衔接句，不要突然跳话题
+${hook ? `⑥ 开场第一句必须是：「${hook}」` : '⑥ 开场用一句让人停下来的话，参考台词的开场方式'}
+
+用以下标签分段：
+
+[开场]
+Hook 第一句 + 2-3 句引出，口语，有停顿感，跟下一段要有衔接
+
+[共鸣]
+5-7 句，说出观众的处境，要有具体画面感
+例如不是「很辛苦」，是「每次发薪日前三天，我都不敢看银行余额」
+结尾自然衔接到故事段
+
+[故事]
+7-9 句，主人公真实经历，把具体细节展开
+要有转折，说出当时的感受，有情绪
+开头要从共鸣段自然接过来，例如「我就是这样，直到……」
+
+[JS Tradventures]
+5-6 句，具体说帮了什么，真实改变
+开头要从故事段自然接过来，例如「后来我……」「就是那时候……」
+不要广告感，像在推荐朋友
+
+[结尾]
+2-3 句，给还在犹豫的人
+开头从 JS Tradventures 段自然接过来
+口语，有温度
+
+直接给脚本，不要任何解释。`;
+}
+
+
+function shotPrompt(c, script) {
+  return `你是一位专业的短视频导演，为以下 UGC 脚本制作完整拍摄清单。
+
+创作者：${c.f.name || c.codename}
+背景：${c.f.job}，${c.f.before}
+
+脚本全文：
+${script}
+
+拍摄清单要求：
+- 主镜头（A-roll）：创作者对镜头说话，说明拍摄角度、表情、手势
+- 补充镜头（B-roll）：配合旁白画面，至少 10 个，要有创意和变化
+- B-roll 必须贴合马来西亚普通人生活，手机就能拍，不需要专业设备
+- B-roll 建议包含：日常生活场景、手机屏幕特写、环境空镜、人物动作细节、对比画面等
+- 每个 B-roll 描述要具体，说清楚拍什么、怎么拍、在哪里拍、什么角度
+
+输出格式，每个镜头一行，用 | 分隔：
+段落|时间码|对应台词|类型|详细拍摄描述
+
+段落只能是：开场/共鸣/故事/JST/结尾
+类型只能是：主镜头/补充镜头
+不要表头，直接输出数据行。`;
+}
+
+// ─────────────────────────────────────────────
+// OUTPUT CARDS
+// ─────────────────────────────────────────────
+function rawScript(s) {
+  // Return plain text version for textarea (no HTML spans)
+  return esc(s);
+}
+
+function buildCard(c, i, script) {
+  const name = (c.mode === 'knowledge') ? (c.knowTopic || '知识型脚本') : (c.f.name || c.codename || ('创作者' + (i+1)));
+  const cid = 'c' + Math.round(c.id);
+  return `<div class="out-card">
+    <div class="out-hdr">
+      <div class="out-name">✦ ${esc(name)}</div>
+      <button class="btn btn-s" style="font-size:11px;padding:6px 12px;" onclick="copyEl('${cid}_s')">📋 复制脚本</button>
+    </div>
+    <div class="out-body">
+      <div style="position:relative;">
+        <button class="cbtn" onclick="copyEl('${cid}_s')" style="position:absolute;top:10px;right:10px;z-index:2;">复制</button>
+        <textarea id="${cid}_s" style="width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:20px;padding-right:80px;font-size:14px;line-height:1.9;color:var(--t);min-height:300px;font-family:'Noto Sans SC',sans-serif;resize:vertical;outline:none;" oninput="gd[${JSON.stringify(c.id)}].script=this.value">${rawScript(script)}</textarea>
+      </div>
+    </div>
+  </div>`;
+}
+
+function fmtScript(s) {
+  return s
+    .replace(/\[开场\]/g,'<span style="color:var(--r);font-weight:700;font-size:11px;letter-spacing:1px;">▶ 开场</span>')
+    .replace(/\[共鸣\]/g,'<span style="color:var(--p);font-weight:700;font-size:11px;letter-spacing:1px;">▶ 共鸣</span>')
+    .replace(/\[故事\]/g,'<span style="color:var(--g);font-weight:700;font-size:11px;letter-spacing:1px;">▶ 故事</span>')
+    .replace(/\[JST\]/g,'<span style="color:var(--a);font-weight:700;font-size:11px;letter-spacing:1px;">▶ JST</span>')
+    .replace(/\[结尾\]/g,'<span style="color:#ff9f43;font-weight:700;font-size:11px;letter-spacing:1px;">▶ 结尾</span>');
+}
+
+function buildTable(raw) {
+  if (!raw || !raw.trim()) return '<p style="color:var(--m);font-size:13px;padding:16px;">拍摄清单为空。</p>';
+  const segCls = {'开场':'s1c','共鸣':'s2c','故事':'s3c','JST':'s4c','结尾':'s5c'};
+  const rows = raw.trim().split('\n').map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length < 4) return '';
+    const [seg, tc, audio, type, shot] = parts;
+    return `<tr>
+      <td><span class="slbl ${segCls[seg]||'s2c'}">${esc(seg||'')}</span><br><span style="color:var(--m);font-size:11px;">${esc(tc||'')}</span></td>
+      <td>${esc(audio||'')}</td>
+      <td><span class="${type==='主镜头'?'at':'bt'}">${esc(type||'补充镜头')}</span>${esc(shot||'')}</td>
+    </tr>`;
+  }).join('');
+  return `<table class="tbl"><thead><tr><th style="width:90px;">段落</th><th>🎙️ 旁白台词</th><th>🎬 拍摄画面</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function polishScripts() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+
+  const c = C();
+  const cid = 'c' + Math.round(c.id);
+  const ta = document.getElementById(cid + '_s');
+  if (!ta || !ta.value.trim()) { showN('没有脚本内容可以润色', false); return; }
+
+  // Save latest textarea content
+  if (!gd[c.id]) gd[c.id] = {};
+  gd[c.id].script = ta.value.trim();
+
+  const btn = document.getElementById('polishBtn');
+  const st = document.getElementById('polishStatus');
+  if (btn) btn.disabled = true;
+  if (st) { st.textContent = 'AI 正在润色检查…'; st.style.color = 'var(--p)'; }
+
+  try {
+    const result = await ask(polishPrompt(gd[c.id].script, c));
+    ta.value = result;
+    gd[c.id].script = result;
+    if (st) { st.textContent = '✓ 润色完成，请检查后确认生成拍摄清单'; st.style.color = 'var(--a)'; }
+    showN('✓ 脚本润色完成', true);
+  } catch(e) {
+    if (st) { st.textContent = '润色失败：' + e.message; st.style.color = 'var(--r)'; }
+    showN('润色失败', false);
+  }
+  if (btn) btn.disabled = false;
+}
+
+function polishPrompt(script, c) {
+  return `你是一位专业的短视频脚本编辑。
+
+任务：优化以下脚本，把创作者加的词自然融入，同时确保整体口语化。
+
+规定：
+1. 品牌名称只能写「JS Tradventures」，不可以写「JST」
+2. 全程口语化，像真人跟朋友说话，不要书面语
+3. 删掉所有「在人生的道路上」「深刻体会」「面对挑战」「我深感」这类书面语，换成口语表达
+4. 创作者加的词要保留，融入得自然
+5. 保留所有 [开场] [共鸣] [故事] [JS Tradventures] [结尾] 段落标签
+
+创作者：${c.f.name}
+
+脚本：
+${script}
+
+直接输出优化后的完整脚本，不要任何解释。`;
+}
+
+async function confirmAndGenShots() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+
+  const c = C();
+  const cid = 'c' + Math.round(c.id);
+  const name = c.f.name || c.codename || ('创作者'+(ai+1));
+
+  // Read latest script from textarea
+  const ta = document.getElementById(cid + '_s');
+  if (ta && ta.value.trim()) {
+    if (!gd[c.id]) gd[c.id] = {};
+    gd[c.id].script = ta.value.trim();
+  }
+
+  const d = gd[c.id];
+  if (!d || !d.script) { showN('请先生成脚本', false); return; }
+
+  goStep(4);
+  const out = document.getElementById('shotOut');
+  out.innerHTML = `<div class="lw"><div class="sp"></div><p>正在为「${esc(name)}」生成拍摄清单……</p></div>`;
+
+  try {
+    const shots = await ask(shotPrompt(c, d.script));
+    d.shots = shots;
+    out.innerHTML = `<div class="out-card" style="margin-bottom:20px;">
+      <div class="out-hdr"><div class="out-name">🎬 ${esc(name)} — 拍摄清单</div></div>
+      <div class="out-body" style="overflow-x:auto;">${buildTable(shots)}</div>
+    </div>`;
+    showN('✦ 拍摄清单已生成', true);
+  } catch(e) {
+    out.innerHTML = `<div class="card"><p style="color:var(--r);font-size:13px;">生成失败：${e.message}</p></div>`;
+    showN('生成失败', false);
+  }
+}
+
+function buildShots() {
+  let html = '';
+  creators.forEach((c,i) => {
+    const d = gd[c.id]; if (!d || !d.shots) return;
+    const name = c.f.name || c.codename || ('创作者'+(i+1));
+    html += `<div class="out-card" style="margin-bottom:20px;">
+      <div class="out-hdr"><div class="out-name">🎬 ${esc(name)} — 拍摄清单</div></div>
+      <div class="out-body" style="overflow-x:auto;">${buildTable(d.shots)}</div>
+    </div>`;
+  });
+  if (!html) html = '<div class="empty"><div class="ei">🎬</div><p>先确认脚本后这里会显示拍摄清单。</p></div>';
+  document.getElementById('shotOut').innerHTML = html;
+}
+
+// ─────────────────────────────────────────────
+// API
+// ─────────────────────────────────────────────
+async function ask(prompt) {
+  const key = getKey();
+  if (!key) throw new Error('请先设置 API Key');
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  let txt;
+  try { txt = await r.text(); } catch(e) { throw new Error('网络错误'); }
+  if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + txt.slice(0,200));
+  let d;
+  try { d = JSON.parse(txt); } catch(e) { throw new Error('格式错误: ' + txt.slice(0,100)); }
+  if (d.error) throw new Error(d.error.message || JSON.stringify(d.error).slice(0,150));
+  if (!d.choices || !d.choices[0]) throw new Error('无响应内容');
+  return d.choices[0].message?.content || '';
+}
+
+function getKey() { return localStorage.getItem('jst_groq_key') || ''; }
+function saveKey() {
+  const v = document.getElementById('apiKeyInput')?.value.trim();
+  if (!v || v.length < 10) { showN('请输入有效的 Groq API Key', false); return; }
+  localStorage.setItem('jst_groq_key', v);
+  refreshKeyUI();
+  showN('✓ API Key 已保存', true);
+}
+function clearKey() {
+  localStorage.removeItem('jst_groq_key');
+  const i = document.getElementById('apiKeyInput');
+  if (i) i.value = '';
+  refreshKeyUI();
+}
+function refreshKeyUI() {
+  const key = getKey();
+  const bar = document.getElementById('apibar');
+  const st = document.getElementById('apiStatus');
+  const clr = document.getElementById('apiClearBtn');
+  const inp = document.getElementById('apiKeyInput');
+  if (!bar) return;
+  if (key) {
+    bar.style.borderColor = 'rgba(200,255,0,.4)';
+    bar.style.background = 'rgba(200,255,0,.05)';
+    if (st) st.textContent = '✓ Groq API Key 已设置';
+    if (clr) clr.style.display = 'inline-block';
+    if (inp) inp.value = key;
+  } else {
+    bar.style.borderColor = 'rgba(255,77,109,.3)';
+    bar.style.background = 'rgba(255,77,109,.05)';
+    if (st) st.textContent = '请先输入 Groq API Key';
+    if (clr) clr.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function goStep(n) {
+  // panels: p0=0, p1=1, p2=2, p3=3, p4=4
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('on', i===n));
+  document.querySelectorAll('.step').forEach((s,i) => {
+    s.classList.toggle('active', i===n);
+    if (i<n) s.classList.add('done'); else s.classList.remove('done');
+  });
+  if (n===2) { renderTabs(); renderEditForm(); renderHookUI(); }
+  if (n===0) { renderTabs(); syncRefUI(); }
+  if (n===1) { renderTabs(); }
+}
+
+function syncRefUI() {
+  const c = C();
+  // Restore transcript
+  const rt = document.getElementById('refTranscript');
+  if (rt) rt.value = c.refTranscript || '';
+  // Restore analysis result or clear
+  const result = document.getElementById('refAnalysisResult');
+  const st = document.getElementById('refAnalyzeStatus');
+  if (c.refAnalysis) {
+    showRefAnalysis(c.refAnalysis);
+    if (st) { st.textContent = '✓ 已分析'; st.className = 'status ok'; }
+  } else {
+    if (result) result.style.display = 'none';
+    if (st) { st.textContent = ''; st.className = 'status'; }
+  }
+  // Always update the top ref box with current creator's analysis
+  updateTopRefBox(c);
+}
+
+function updateTopRefBox(c) {
+  const nameEl = document.getElementById('refBoxCreatorName');
+  const hookEl = document.getElementById('refBox_hook');
+  const toneEl = document.getElementById('refBox_tone');
+  const structEl = document.getElementById('refBox_structure');
+  const visualEl = document.getElementById('refBox_visual');
+  if (!hookEl) return;
+
+  const analysis = c.refAnalysis;
+  if (analysis) {
+    if (nameEl) nameEl.textContent = (c.f.name || c.codename || '当前创作者') + ' 的参考风格';
+    if (hookEl) hookEl.textContent = analysis.hookStyle || '';
+    if (toneEl) toneEl.textContent = analysis.tone || '';
+    if (structEl) structEl.textContent = analysis.structure || '';
+    if (visualEl) visualEl.textContent = analysis.visual || '';
+  } else {
+    if (nameEl) nameEl.textContent = (C().f.name || C().codename || '当前创作者') + ' — 默认风格';
+    if (hookEl) hookEl.textContent = '反直觉陈述式 — 开口说一句让人意外的结论，逼观众继续看';
+    if (toneEl) toneEl.textContent = '轻松随意，像跟朋友讲道理，不推销，讲观念';
+    if (structEl) structEl.textContent = '开场 → 引发共鸣 → 展开故事 → 情绪升华结尾';
+    if (visualEl) visualEl.textContent = '大字幕强调重点，单场景对镜头，手势辅助表达';
+  }
+}
+
+function goToStep2() {
+  saveStep1();
+  const c = C();
+  if (!c.parsed && !c.f.name) {
+    showN('请先贴入内容并解析，或进入下一步手动填写', false);
+  }
+  goStep(2);
+}
+
+function saveRefFields() {
+  const c = C();
+  const rt = document.getElementById('refTranscript');
+  if (rt) c.refTranscript = rt.value;
+}
+
+function swTab(btn, tid) {
+  const body = btn.closest('.out-body');
+  body.querySelectorAll('.otab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  body.querySelectorAll('[id$="_sv"],[id$="_tv"]').forEach(p => p.style.display='none');
+  const t = document.getElementById(tid); if(t) t.style.display='block';
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function copyEl(id) {
+  const el = document.getElementById(id); if (!el) return;
+  const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+  navigator.clipboard.writeText(text).then(() => showN('✓ 已复制', true));
+}
+
+function copyAll() {
+  const c = C();
+  const d = gd[c.id];
+  if (!d || !d.script) { showN('没有脚本可以复制', false); return; }
+  navigator.clipboard.writeText(d.script).then(() => showN('✓ 脚本已复制', true));
+}
+
+function showN(msg, ok=true) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'notif show ' + (ok ? 'ok' : 'err');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─────────────────────────────────────────────
+// MODE (story / knowledge)
+// ─────────────────────────────────────────────
+function setMode(mode) {
+  C().mode = mode;
+  document.getElementById('modeStoryBtn').classList.toggle('active', mode === 'story');
+  document.getElementById('modeKnowBtn').classList.toggle('active', mode === 'knowledge');
+  document.getElementById('storySection').style.display = mode === 'story' ? 'block' : 'none';
+  document.getElementById('knowledgeSection').style.display = mode === 'knowledge' ? 'block' : 'none';
+  // Update Step 2 button label
+  const hookBtn = document.getElementById('showHookBtn');
+  if (hookBtn) hookBtn.textContent = mode === 'knowledge' ? '✦ 确认内容，生成 Hook →' : '✦ 确认内容，生成 Hook →';
+}
+
+function syncModeUI() {
+  const mode = C().mode || 'story';
+  setMode(mode);
+  // Sync knowledge fields
+  const kt = document.getElementById('knowledgeTopic');
+  const ck = document.getElementById('customKnowPoint');
+  if (kt) kt.value = C().knowTopic || '';
+  if (ck) ck.value = C().knowPoint || '';
+  // Show suggestions if already generated
+  if (C().knowSuggestions && C().knowSuggestions.length) {
+    renderSuggestions(C().knowSuggestions);
+  }
+}
+
+// ─────────────────────────────────────────────
+// KNOWLEDGE SUGGESTIONS
+// ─────────────────────────────────────────────
+async function suggestPoints() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+  const c = C();
+  const topic = document.getElementById('knowledgeTopic')?.value.trim();
+  if (!topic) { showN('请先输入主题', false); return; }
+  c.knowTopic = topic;
+
+  const btn = document.getElementById('suggestBtn');
+  const st = document.getElementById('suggestStatus');
+  const txt = document.getElementById('suggestBtnTxt');
+  btn.disabled = true;
+  txt.textContent = '生成中…';
+  if (st) { st.textContent = ''; st.className = 'status'; }
+
+  try {
+    const result = await ask(suggestPrompt(topic));
+    const lines = result.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+    // Parse numbered suggestions with descriptions
+    const suggestions = [];
+    let current = null;
+    for (const line of lines) {
+      if (/^[1-3][.)]\s/.test(line)) {
+        if (current) suggestions.push(current);
+        current = { title: line.replace(/^[1-3][.)]\s*/, '').trim(), desc: '' };
+      } else if (current && line && !line.startsWith('[')) {
+        current.desc += (current.desc ? ' ' : '') + line;
+      }
+    }
+    if (current) suggestions.push(current);
+
+    c.knowSuggestions = suggestions.slice(0, 3);
+    renderSuggestions(c.knowSuggestions);
+    if (st) { st.textContent = '✓ 建议已生成'; st.className = 'status ok'; }
+    showN('✓ 知识点建议已生成', true);
+  } catch(e) {
+    if (st) { st.textContent = '生成失败：' + e.message; st.className = 'status err'; }
+  }
+  btn.disabled = false;
+  txt.textContent = '✦ AI 建议知识点';
+}
+
+function suggestPrompt(topic) {
+  return `你是一位交易和投资知识的内容策划，专门为马来西亚华人制作简单易懂的教育短视频。
+
+主题：「${topic}」
+
+根据这个主题，建议 3 个适合做成 60 秒短视频的知识点。每个知识点要：
+- 只讲一个清晰的概念
+- 普通小白能听懂
+- 有实用性，看完能用到
+
+输出格式：
+1. （知识点标题，10字以内）
+（2-3句说明这个知识点要教什么，为什么有用）
+
+2. （知识点标题，10字以内）
+（2-3句说明）
+
+3. （知识点标题，10字以内）
+（2-3句说明）
+
+只输出这三个，不要其他文字。`;
+}
+
+function renderSuggestions(suggestions) {
+  const box = document.getElementById('suggestionsBox');
+  const list = document.getElementById('suggestionsList');
+  if (!box || !list) return;
+  const c = C();
+  list.innerHTML = suggestions.map((s, i) => `
+    <div class="suggest-card ${c.knowPoint === s.title ? 'sel' : ''}" onclick="selectSuggestion(${i})">
+      <div class="suggest-dot"></div>
+      <div>
+        <div class="suggest-title">${esc(s.title)}</div>
+        <div class="suggest-desc">${esc(s.desc)}</div>
+      </div>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+
+function selectSuggestion(i) {
+  const c = C();
+  const s = c.knowSuggestions[i];
+  c.knowPoint = s.title + '：' + s.desc;
+  c.knowPointConfirmed = true;
+  const ck = document.getElementById('customKnowPoint');
+  if (ck) ck.value = c.knowPoint;
+  renderSuggestions(c.knowSuggestions);
+  showN('✓ 已选择知识点', true);
+}
+
+// ─────────────────────────────────────────────
+// KNOWLEDGE SCRIPT PROMPT
+// ─────────────────────────────────────────────
+function knowledgeScriptPrompt(c) {
+  const hook = c.selectedHook || (c.hooks[0] || '');
+  const hasRef = c.refAnalysis && c.refTranscript;
+  const transcript = c.refTranscript ? c.refTranscript.slice(0, 600) : '';
+
+  const styleBlock = hasRef ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【参考台词 — 模仿这个人说话的节奏和感觉】
+${transcript}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+模仿上面台词的说话方式：句子多短、怎么停顿、语气随意还是正式。
+` : `像朋友教你：短句、直接、口语、有停顿感。`;
+
+  return `你是一位专门写马来西亚华人交易教育短视频脚本的写手。
+
+${styleBlock}
+
+要教的知识点：
+${c.knowPoint || c.knowTopic}
+
+写一段 50-60 秒的知识型 UGC 脚本。
+
+写规则：
+① 纯简体中文，不加英文或马来文
+② 每句话短，像真人说话
+③ 禁止书面语：「在……领域中」「深刻理解」「值得注意的是」「不可忽视」
+④ 要用比喻或简单例子，让 10 岁小孩也能听懂
+⑤ 整体像朋友教你，不是老师上课
+${hook ? `⑥ 开场第一句：「${hook}」` : '⑥ 开场用一句让人停下来的话，吸引继续看'}
+
+用以下标签分段：
+
+[开场]
+一句 Hook，然后 1-2 句引出知识点，口语
+
+[解释]
+把这个知识点用最简单的方式解释清楚
+用比喻或生活例子，要具体
+至少 6-8 句，让人真的听懂
+
+[示例]
+给一个具体的例子或场景
+说明在实际交易中怎么用这个知识
+
+[结尾]
+1-2 句，总结重点
+轻轻提一下 JS Tradventures：「这是我在 JS Tradventures 学到的……」之类
+不要硬销，自然带出
+
+直接给脚本，不要解释。`;
+}
+
+// ─────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────
+init();
+goStep(0);
+refreshKeyUI();
+</script>
+</body>
+</html>
+    </div><!-- end storySection -->
+
+    <div class="notes-box">
+      <div class="notes-lbl">✏️ 你的补充备注</div>
+      <div class="fg">
+        <label>创作者代号</label>
+        <input type="text" id="codenameInput" placeholder="阿伟、Creator A……" oninput="updateCodename(this.value)">
+      </div>
+      <div class="fg" style="margin-bottom:0;">
+        <label>你想特别强调的重点</label>
+        <textarea id="notesInput" placeholder="单亲妈妈、想强调收入数字、特别的转折点……" style="min-height:70px;"></textarea>
+      </div>
+    </div>
+
+    <div class="brow">
+      <button class="btn btn-s" onclick="addCreator()">＋ 新增创作者</button>
+      <button class="btn btn-a" onclick="goToStep2()">下一步：检查修改 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div class="panel" id="p2">
+  <div class="card">
+    <div class="card-title">检查与修改</div>
+    <div class="card-sub">以下内容由 AI 自动填入，请检查是否准确，可以直接修改。确认后生成 Hook 选项。</div>
+    <div class="tabs" id="tabs2"></div>
+    <div id="editForm"></div>
+
+    <!-- HOOK SECTION -->
+    <div class="hook-box" id="hookBox" style="display:none;">
+      <div class="hook-lbl">🪝 选择开场 Hook</div>
+      <div style="font-size:13px;color:var(--m);margin-bottom:16px;line-height:1.6;">
+        AI 根据你的故事深度分析，生成 3 个专属 Hook 选项。<br>
+        <span style="color:var(--a);font-size:12px;">选一个点击确认，或在下方自己写。脚本会根据你最终选定的 Hook 生成。</span>
+      </div>
+
+      <!-- AI GENERATED OPTIONS -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--p);margin-bottom:10px;">AI 生成选项</div>
+      <div id="hookOpts" style="margin-bottom:14px;"></div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:20px;">
+        <button class="btn-parse" id="regenBtn" onclick="genHooks()" style="font-size:12px;padding:8px 16px;"><span id="regenTxt">↺ 重新生成 3 个</span></button>
+        <div class="status" id="hookStatus"></div>
+      </div>
+
+      <!-- CUSTOM OPTION -->
+      <div style="background:var(--s1);border:1.5px dashed rgba(200,255,0,.3);border-radius:10px;padding:16px;margin-bottom:4px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--a);margin-bottom:8px;">✏️ 自己写 Hook</div>
+        <textarea id="customHook" style="min-height:56px;font-size:14px;border-color:rgba(200,255,0,.2);" placeholder="在这里输入你自己想要的 Hook……" oninput="useCustomHook(this.value)"></textarea>
+        <button onclick="confirmCustomHook()" style="margin-top:10px;background:rgba(200,255,0,.15);border:1px solid rgba(200,255,0,.3);color:var(--a);font-family:'Noto Sans SC',sans-serif;font-size:12px;font-weight:700;padding:7px 16px;border-radius:7px;cursor:pointer;">✓ 使用这个 Hook</button>
+      </div>
+
+      <!-- CONFIRMED HOOK DISPLAY -->
+      <div id="confirmedHookDisplay" style="display:none;background:rgba(200,255,0,.07);border:1px solid rgba(200,255,0,.3);border-radius:10px;padding:14px 16px;margin-top:14px;">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--a);margin-bottom:6px;">✓ 已选定 Hook</div>
+        <div id="confirmedHookText" style="font-size:15px;font-weight:600;color:var(--t);line-height:1.5;"></div>
+        <button onclick="clearConfirmedHook()" style="margin-top:8px;background:none;border:none;color:var(--m);font-size:11px;cursor:pointer;text-decoration:underline;">重新选择</button>
+      </div>
+    </div>
+
+    <div class="brow">
+      <button class="btn btn-s" onclick="goStep(1)">← 返回</button>
+      <button class="btn btn-a" id="showHookBtn" onclick="showHooks()">✦ 确认内容，生成 Hook →</button>
+      <button class="btn btn-gen" id="genScriptBtn" onclick="generateCurrent()" style="display:none;">✦ 生成脚本</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div class="panel" id="p3">
+  <div id="scriptsOut"><div class="empty"><div class="ei">✦</div><p>还没有脚本。<br>完成前两步后点「生成所有脚本」。</p></div></div>
+  <div id="polishStatus" style="font-size:13px;color:var(--m);padding:0 4px 8px;min-height:20px;"></div>
+  <div class="brow">
+    <button class="btn btn-s" onclick="goStep(2)">← 返回修改</button>
+    <button class="btn btn-s" id="polishBtn" onclick="polishScripts()" style="border-color:var(--p);color:var(--p);">✦ AI 润色检查脚本</button>
+    <button class="btn btn-gen" onclick="confirmAndGenShots()">✓ 确认脚本，生成拍摄清单 →</button>
+  </div>
+</div>
+
+<!-- STEP 4 -->
+<div class="panel" id="p4">
+  <div id="shotOut"><div class="empty"><div class="ei">🎬</div><p>先生成脚本，拍摄清单会出现在这里。</p></div></div>
+  <div class="brow">
+    <button class="btn btn-s" onclick="goStep(3)">← 返回脚本</button>
+    <button class="btn btn-a" onclick="copyAll()">📋 复制所有脚本</button>
+  </div>
+</div>
+
+</div><!-- end wrap -->
+
+<script>
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let creators = [];
+let ai = 0; // activeIndex
+let gd = {}; // generated data
+
+function C() { return creators[ai]; }
+
+function blank(n) {
+  return {
+    id: Date.now() + Math.random(),
+    codename: '创作者 ' + n,
+    mode: 'story',
+    rawText: '',
+    notes: '',
+    parsed: false,
+    knowTopic: '',
+    knowPoint: '',
+    knowPointConfirmed: false,
+    knowSuggestions: [],
+    hooks: [],
+    selectedHook: '',
+    hooksGenerated: false,
+    refVideoFile: null,
+    refTranscript: '',
+    refAnalysis: null, // { hookStyle, tone, structure, visual }
+    f: { name:'', job:'', age:'', before:'', fear:'', howmet:'', decision:'', after:'', jst_help:'', message:'', extra:'' }
+  };
+}
+
+function init() { addCreator(); }
+
+function addCreator() {
+  creators.push(blank(creators.length + 1));
+  ai = creators.length - 1;
+  syncUI();
+}
+
+function removeCreator(i) {
+  if (creators.length <= 1) { showN('至少保留一位创作者', false); return; }
+  creators.splice(i, 1);
+  ai = Math.min(ai, creators.length - 1);
+  syncUI();
+}
+
+function setActive(i) {
+  saveStep1();
+  ai = i;
+  syncUI();
+}
+
+// ─────────────────────────────────────────────
+// SYNC UI
+// ─────────────────────────────────────────────
+function syncUI() {
+  renderTabs();
+  syncRefUI();
+  syncStep1Fields();
+  syncModeUI();
+  renderEditForm();
+  renderHookUI();
+}
+
+function renderTabs() {
+  ['tabs0','tabs1','tabs2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = creators.map((c,i) => {
+      const cls = ['tab', i===ai?'on':'', c.parsed?'ok':''].filter(Boolean).join(' ');
+      return `<button class="${cls}" onclick="setActive(${i})">${esc(c.codename)}${c.parsed?' ✓':''}</button>`;
+    }).join('') + `<button class="tab add" onclick="addCreator()">＋ 新增</button>`;
+  });
+}
+
+function syncStep1Fields() {
+  const c = C();
+  const pa = document.getElementById('pasteArea');
+  const ci = document.getElementById('codenameInput');
+  const ni = document.getElementById('notesInput');
+  const ps = document.getElementById('parseStatus');
+  if (pa) pa.value = c.rawText || '';
+  if (ci) ci.value = c.codename || '';
+  if (ni) ni.value = c.notes || '';
+  if (ps) {
+    ps.textContent = c.parsed ? '✓ 已解析' : '';
+    ps.className = 'status' + (c.parsed ? ' ok' : '');
+  }
+}
+
+function saveStep1() {
+  const c = C();
+  const rt = document.getElementById('refTranscript');
+  const pa = document.getElementById('pasteArea');
+  const ci = document.getElementById('codenameInput');
+  const ni = document.getElementById('notesInput');
+  if (rt) c.refTranscript = rt.value;
+  if (pa) c.rawText = pa.value;
+  if (ci && ci.value.trim()) c.codename = ci.value.trim();
+  if (ni) c.notes = ni.value;
+}
+
+function updateCodename(v) {
+  C().codename = v || ('创作者 ' + (ai+1));
+  renderTabs();
+}
+
+// ─────────────────────────────────────────────
+// REFERENCE VIDEO
+// ─────────────────────────────────────────────
+function triggerRefUpload() {
+  document.getElementById('refVideoInput').click();
+}
+
+function handleRefDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) loadRefFile(file);
+  else showN('请上传视频文件', false);
+}
+
+function handleRefVideo(input) {
+  const file = input.files[0];
+  if (file) loadRefFile(file);
+}
+
+function loadRefFile(file) {
+  const c = C();
+  c.refVideoFile = file;
+  // Show file info
+  const area = document.getElementById('refUploadArea');
+  const info = document.getElementById('refFileInfo');
+  const nameEl = document.getElementById('refFileName');
+  const sizeEl = document.getElementById('refFileSize');
+  if (area) area.style.display = 'none';
+  if (info) { info.style.display = 'flex'; }
+  if (nameEl) nameEl.textContent = file.name;
+  const kb = file.size > 1048576 ? (file.size/1048576).toFixed(1)+' MB' : Math.round(file.size/1024)+' KB';
+  if (sizeEl) sizeEl.textContent = kb;
+  showN('✓ 视频已上传', true);
+}
+
+function useDefaultStyle() {
+  const defaultAnalysis = {
+    hookStyle: '反直觉陈述式 — 开口说一句让人意外的结论，例如「不给家用，才帮得到你家人」，逼观众继续看下去',
+    tone: '轻松随意，像在车里跟朋友讲道理。不推销，讲观念。有停顿感，慢条斯理，有手势辅助表达。',
+    structure: '开场一句反直觉话 → 引发共鸣说出观众处境 → 主人公亲身经历展开 → 情绪升华结尾，有停顿感',
+    visual: '单场景 talking head 对镜头。大字幕强调重点词。自然光，手持或固定手机拍摄。'
+  };
+  C().refAnalysis = defaultAnalysis;
+  showRefAnalysis(defaultAnalysis);
+  const st = document.getElementById('refAnalyzeStatus');
+  if (st) { st.textContent = '✓ 已使用默认风格'; st.className = 'status ok'; }
+  showN('✓ 已套用默认风格', true);
+}
+
+function removeRefVideo() {
+  const c = C();
+  c.refVideoFile = null;
+  const area = document.getElementById('refUploadArea');
+  const info = document.getElementById('refFileInfo');
+  const input = document.getElementById('refVideoInput');
+  if (area) area.style.display = 'block';
+  if (info) info.style.display = 'none';
+  if (input) input.value = '';
+}
+
+async function analyzeRef() {
+  const c = C();
+  // Always read fresh from textarea
+  const ta = document.getElementById('refTranscript');
+  if (ta) c.refTranscript = ta.value.trim();
+
+  if (!c.refTranscript) {
+    showN('请先贴入视频台词', false); return;
+  }
+
+  const btn = document.getElementById('refAnalyzeBtn');
+  const st = document.getElementById('refAnalyzeStatus');
+  btn.disabled = true;
+  st.textContent = 'AI 正在分析风格…';
+  st.className = 'status loading';
+
+  try {
+    let analysisPrompt = refAnalyzePrompt(c.refTranscript);
+
+    // If video uploaded, extract frames for visual analysis
+    if (c.refVideoFile) {
+      st.textContent = '正在提取视频画面…';
+      try {
+        const frames = await extractVideoFrames(c.refVideoFile);
+        if (frames.length > 0) {
+          analysisPrompt = refAnalyzePromptWithFrames(c.refTranscript, frames.length);
+        }
+      } catch(e) { /* continue without frames */ }
+    }
+
+    st.textContent = 'AI 正在分析…';
+    const result = await ask(analysisPrompt);
+    const analysis = parseRefAnalysis(result);
+    c.refAnalysis = analysis;
+    showRefAnalysis(analysis);
+    st.textContent = '✓ 分析完成';
+    st.className = 'status ok';
+    showN('✓ 风格分析完成', true);
+  } catch(e) {
+    st.textContent = '分析失败：' + e.message;
+    st.className = 'status err';
+    showN('分析失败', false);
+  }
+  btn.disabled = false;
+}
+
+async function extractVideoFrames(file) {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
+    video.muted = true;
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const frames = [];
+
+    video.onloadedmetadata = () => {
+      const times = [0.5, video.duration * 0.25, video.duration * 0.5, video.duration * 0.75];
+      let captured = 0;
+      times.forEach((t, i) => {
+        const v2 = document.createElement('video');
+        v2.src = video.src;
+        v2.muted = true;
+        v2.currentTime = t;
+        v2.onseeked = () => {
+          canvas.width = 400;
+          canvas.height = Math.round(400 * v2.videoHeight / v2.videoWidth);
+          ctx.drawImage(v2, 0, 0, canvas.width, canvas.height);
+          frames[i] = canvas.toDataURL('image/jpeg', 0.6).split(',')[1];
+          captured++;
+          if (captured === times.length) resolve(frames.filter(Boolean));
+        };
+        v2.onerror = () => { captured++; if (captured === times.length) resolve(frames.filter(Boolean)); };
+        v2.load();
+      });
+    };
+    video.onerror = () => resolve([]);
+    video.load();
+  });
+}
+
+function refAnalyzePrompt(transcript) {
+  return `你是一位专业的短视频风格分析师。
+
+以下是参考视频的台词：
+---
+${transcript}
+---
+
+分析这条视频的说话风格，每个字段用标签开头：
+
+[HOOK] 开场方式：第一句话是什么类型？（反直觉/数字冲击/争议性/故事开头/直接结论）举出原文第一句话，说明为什么有效。
+
+[TONE] 说话方式（最重要）：
+- 句子平均长度：短句/中句/长句？
+- 停顿方式：怎么断句？
+- 语气：自信/随意/叙事/教学/朋友分享？
+- 有没有口头禅或重复用法？
+- 举出2-3个最能代表这个风格的原文句子
+
+[STRUCTURE] 内容结构：怎么开始，中间怎么走，结尾怎么收？有没有特别的过渡方式？
+
+[VISUAL] 视觉风格：适合什么拍摄方式？场景、字幕、B-roll 类型。
+
+每个标签后直接写，不要编号。`;
+}
+
+function refAnalyzePromptWithFrames(transcript, frameCount) {
+  return refAnalyzePrompt(transcript) + `
+
+（已提取 ${frameCount} 个视频画面帧辅助分析视觉风格）`;
+}
+
+function parseRefAnalysis(text) {
+  const get = (label) => {
+    const tag = '[' + label + ']';
+    const i = text.indexOf(tag);
+    if (i === -1) return '';
+    const start = i + tag.length;
+    const labels = ['[HOOK]','[TONE]','[STRUCTURE]','[VISUAL]'];
+    let end = text.length;
+    for (const o of labels) {
+      if (o === tag) continue;
+      const oi = text.indexOf(o, start);
+      if (oi > -1 && oi < end) end = oi;
+    }
+    return text.slice(start, end).trim();
+  };
+  return {
+    hookStyle: get('HOOK') || text.slice(0,300),
+    tone:      get('TONE'),
+    structure: get('STRUCTURE'),
+    visual:    get('VISUAL'),
+    raw:       text
+  };
+}
+
+function showRefAnalysis(analysis) {
+  const result = document.getElementById('refAnalysisResult');
+  const grid = document.getElementById('refAnalysisGrid');
+  if (!result || !grid) return;
+  // Also update top ref box immediately
+  updateTopRefBox(C());
+  const items = [
+    ['🪝 开场 Hook 风格', analysis.hookStyle],
+    ['🎙️ 说话语气与节奏', analysis.tone],
+    ['📋 内容结构', analysis.structure],
+    ['🎬 视觉风格', analysis.visual]
+  ];
+  grid.innerHTML = items.map(([label, val]) => `
+    <div style="background:var(--s2);padding:14px 16px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--m);margin-bottom:6px;">${label}</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--t);">${esc(val || '未能分析')}</div>
+    </div>
+  `).join('');
+  result.style.display = 'block';
+}
+
+// ─────────────────────────────────────────────
+// PARSE
+// ─────────────────────────────────────────────
+// PARSE
+// ─────────────────────────────────────────────
+async function doParse() {
+  // Read directly from textarea — no saveStep1 needed
+  const c = C();
+  const pa = document.getElementById('pasteArea');
+  const raw = pa ? pa.value.trim() : '';
+
+  if (!raw) { showN('请先贴入问卷内容', false); return; }
+
+  const btn = document.getElementById('parseBtn');
+  const st = document.getElementById('parseStatus');
+  btn.disabled = true;
+  st.textContent = 'AI 正在解析…';
+  st.className = 'status loading';
+
+  try {
+    const result = await ask(parsePrompt(raw, c.notes));
+    fillFromResult(c, result);
+    c.rawText = raw;
+    c.parsed = true;
+    renderTabs();
+    renderEditForm();
+    st.textContent = '✓ 解析完成，字段已自动填入';
+    st.className = 'status ok';
+    showN('✓ 解析完成', true);
+  } catch(e) {
+    st.textContent = '解析失败：' + e.message;
+    st.className = 'status err';
+    showN('解析失败', false);
+  }
+  btn.disabled = false;
+}
+
+function parsePrompt(raw, notes) {
+  return `以下是从 Tally 问卷回答复制出来的文字。注意：文字可能是反转的、乱序的或包含乱码，请自动识别并正确理解内容，提取创作者填写的所有信息。
+
+内容：
+---
+${raw.slice(0, 6000)}
+---
+${notes ? '我的额外备注：' + notes : ''}
+
+请严格按以下格式输出，每行一个字段，没有信息留空：
+[NAME] 姓名
+[JOB] 职业
+[AGE] 年龄层（只能是：18-24岁 / 25-30岁 / 30-40岁 / 40岁以上）
+[BEFORE] 加入前的困境
+[FEAR] 当时的担忧
+[HOWMET] 如何认识JST
+[DECISION] 决定加入的原因
+[AFTER] 加入后的改变
+[JSTHELP] JST最大帮助
+[MESSAGE] 想对自己说的话
+[EXTRA] 其他补充
+
+只输出这11行，不要其他文字。`;
+}
+
+function fillFromResult(c, text) {
+  const get = (label) => {
+    const tag = '[' + label + ']';
+    const idx = text.indexOf(tag);
+    if (idx === -1) return '';
+    const start = idx + tag.length;
+    const nextBracket = text.indexOf('[', start);
+    const end = nextBracket > -1 ? nextBracket : text.length;
+    return text.slice(start, end).trim();
+  };
+  c.f.name     = get('NAME');
+  c.f.job      = get('JOB');
+  c.f.age      = get('AGE');
+  c.f.before   = get('BEFORE');
+  c.f.fear     = get('FEAR');
+  c.f.howmet   = get('HOWMET');
+  c.f.decision = get('DECISION');
+  c.f.after    = get('AFTER');
+  c.f.jst_help = get('JSTHELP');
+  c.f.message  = get('MESSAGE');
+  c.f.extra    = get('EXTRA');
+  if (c.f.name && c.codename.startsWith('创作者')) {
+    c.codename = c.f.name;
+    const ci = document.getElementById('codenameInput');
+    if (ci) ci.value = c.f.name;
+  }
+}
+
+// ─────────────────────────────────────────────
+// EDIT FORM (Step 2)
+// ─────────────────────────────────────────────
+function renderEditForm() {
+  const el = document.getElementById('editForm');
+  if (!el) return;
+  const c = C();
+  const f = c.f;
+  el.innerHTML = `
+    <div class="fsec">基本信息</div>
+    <div class="row2">
+      <div class="fg"><label>姓名 <span class="req">*</span><span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.name)}" oninput="C().f.name=this.value" placeholder="阿伟……"></div>
+      <div class="fg"><label>职业<span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.job)}" oninput="C().f.job=this.value" placeholder="上班族……"></div>
+    </div>
+    <div class="fg"><label>年龄层<span class="tag tag-cr">创作者</span></label>
+      <select onchange="C().f.age=this.value">
+        <option value="" ${!f.age?'selected':''}>— 未填写 —</option>
+        <option value="18-24岁" ${f.age==='18-24岁'?'selected':''}>18–24 岁</option>
+        <option value="25-30岁" ${f.age==='25-30岁'?'selected':''}>25–30 岁</option>
+        <option value="30-40岁" ${f.age==='30-40岁'?'selected':''}>30–40 岁</option>
+        <option value="40岁以上" ${f.age==='40岁以上'?'selected':''}>40 岁以上</option>
+      </select></div>
+
+    <div class="fsec">加入前</div>
+    <div class="fg"><label>加入前的困境 <span class="req">*</span><span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.before=this.value">${esc(f.before)}</textarea></div>
+    <div class="fg"><label>当时的担忧<span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.fear=this.value" style="min-height:60px;">${esc(f.fear)}</textarea></div>
+
+    <div class="fsec">认识 JST</div>
+    <div class="row2">
+      <div class="fg"><label>如何认识 JST<span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.howmet)}" oninput="C().f.howmet=this.value"></div>
+      <div class="fg"><label>决定加入的原因<span class="tag tag-cr">创作者</span></label>
+        <input type="text" value="${esc(f.decision)}" oninput="C().f.decision=this.value"></div>
+    </div>
+
+    <div class="fsec">加入后</div>
+    <div class="fg"><label>加入后的改变 <span class="req">*</span><span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.after=this.value">${esc(f.after)}</textarea></div>
+    <div class="fg"><label>JST 最大帮助<span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.jst_help=this.value" style="min-height:60px;">${esc(f.jst_help)}</textarea></div>
+    <div class="fg"><label>想对自己说的话<span class="tag tag-cr">创作者</span></label>
+      <input type="text" value="${esc(f.message)}" oninput="C().f.message=this.value"></div>
+
+    <div class="fsec">你的备注</div>
+    <div class="fg"><label>特别强调的重点<span class="tag tag-you">你</span></label>
+      <textarea oninput="C().notes=this.value">${esc(c.notes)}</textarea></div>
+    <div class="fg"><label>其他补充<span class="tag tag-cr">创作者</span></label>
+      <textarea oninput="C().f.extra=this.value" style="min-height:60px;">${esc(f.extra)}</textarea></div>
+    <button class="btn btn-d" style="margin-top:4px;" onclick="removeCreator(${ai})">✕ 删除此创作者</button>
+  `;
+}
+
+// ─────────────────────────────────────────────
+// HOOKS
+// ─────────────────────────────────────────────
+function showHooks() {
+  const c = C();
+  if (!c.f.name && !c.f.before && !c.f.after) {
+    showN('请先填写创作者故事内容', false); return;
+  }
+  document.getElementById('hookBox').style.display = 'block';
+  document.getElementById('showHookBtn').style.display = 'none';
+  document.getElementById('genScriptBtn').style.display = 'flex';
+  document.getElementById('hookBox').scrollIntoView({ behavior:'smooth', block:'start' });
+  if (!c.hooksGenerated) genHooks();
+}
+
+async function genHooks() {
+  const c = C();
+  const btn = document.getElementById('regenBtn');
+  const st = document.getElementById('hookStatus');
+  const txt = document.getElementById('regenTxt');
+  btn.disabled = true;
+  txt.textContent = '生成中…';
+  st.textContent = '';
+
+  try {
+    const result = await ask(hookPrompt(c));
+    const lines = result.split('\n').map(l => l.trim()).filter(l => l.length > 4);
+    const hooks = lines
+      .filter(l => /^[1-3][.、)\s]/.test(l))
+      .map(l => l.replace(/^[1-3][.、)\s]+/, '').trim())
+      .slice(0, 3);
+    c.hooks = hooks.length >= 1 ? hooks : lines.slice(0, 3);
+    c.hooksGenerated = true;
+    renderHookUI();
+    st.textContent = '✓ 生成完成';
+  } catch(e) {
+    st.textContent = '生成失败，请重试';
+  }
+  btn.disabled = false;
+  txt.textContent = '↺ 重新生成';
+}
+
+function hookPrompt(c) {
+  return `你是一位专业的短视频开场文案撰写人，专门为马来西亚华人社群制作 UGC 内容。
+
+你的任务：根据以下创作者的真实故事，深度分析，生成 3 个强力 Hook。
+
+【创作者完整故事】
+姓名：${c.f.name}
+职业：${c.f.job}
+加入JST前的状态：${c.f.before}
+当时的担忧：${c.f.fear}
+加入后的改变：${c.f.after}
+JST带来的最大帮助：${c.f.jst_help}
+想对自己说的话：${c.f.message}
+
+【分析步骤】（内部思考，不要输出这部分）
+1. 找出这个故事最独特的转折点是什么
+2. 找出观众最容易产生共鸣的痛点
+3. 找出最反直觉、最出乎意料的结论
+
+【Hook 要求】
+- 必须和这个创作者的具体故事高度相关，不能套用通用模板
+- 反直觉陈述式：说一句让人意外的话，逻辑上看似矛盾，让人停下来想
+- 参考风格：「不给家用，才帮得到你家人」、「我亏了钱，才开始真正赚钱」
+- 全程纯简体中文，每句15字以内
+- 3个方向各不同：可以从痛点切入、从结果切入、从观念切入
+
+只输出三行：
+1. （第一个hook）
+2. （第二个hook）
+3. （第三个hook）`;
+}
+
+function renderHookUI() {
+  const c = C();
+  const container = document.getElementById('hookOpts');
+  if (!container) return;
+  container.innerHTML = c.hooks.map((h, i) => `
+    <div class="hook-opt ${c.selectedHook===h?'sel':''}" onclick="selectHook(${i})">
+      <div class="hook-dot"><div class="hook-dot-inner"></div></div>
+      <div class="hook-text">${esc(h)}</div>
+      ${c.selectedHook===h ? '<span style="font-size:10px;color:var(--a);margin-left:auto;font-weight:700;white-space:nowrap;">✓ 已选</span>' : ''}
+    </div>
+  `).join('');
+  // Restore confirmed display if hook already selected
+  if (c.selectedHook) {
+    showConfirmedHook(c.selectedHook);
+  }
+}
+
+function selectHook(i) {
+  const c = C();
+  c.selectedHook = c.hooks[i];
+  renderHookUI();
+  // Show confirmed display
+  showConfirmedHook(c.selectedHook);
+}
+
+function useCustomHook(val) {
+  C().selectedHook = val;
+}
+
+function confirmCustomHook() {
+  const val = document.getElementById('customHook').value.trim();
+  if (!val) { showN('请先输入你的 Hook', false); return; }
+  C().selectedHook = val;
+  // Deselect AI options
+  C().hooks.forEach((h,i) => {});
+  renderHookUI();
+  showConfirmedHook(val);
+}
+
+function showConfirmedHook(text) {
+  const display = document.getElementById('confirmedHookDisplay');
+  const textEl = document.getElementById('confirmedHookText');
+  if (display) display.style.display = 'block';
+  if (textEl) textEl.textContent = text;
+  // Show generate script button
+  document.getElementById('genScriptBtn').style.display = 'flex';
+}
+
+function clearConfirmedHook() {
+  C().selectedHook = '';
+  const display = document.getElementById('confirmedHookDisplay');
+  if (display) display.style.display = 'none';
+}
+
+// ─────────────────────────────────────────────
+// GENERATE SCRIPTS
+// ─────────────────────────────────────────────
+async function generateCurrent() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+  const c = C();
+  const _mode = c.mode || 'story';
+  if (_mode === 'story' && !c.f.name && !c.f.before && !c.f.after) {
+    showN('请先填写创作者的故事内容', false); return;
+  }
+  const mode = c.mode || 'story';
+  const name = mode === 'knowledge' ? (c.knowTopic || '知识型脚本') : (c.f.name || c.codename || ('创作者' + (ai+1)));
+
+  // Validate based on mode
+  if (mode === 'knowledge' && !c.knowPoint && !c.knowTopic) {
+    showN('请先输入知识点主题', false); return;
+  }
+
+  goStep(3);
+  const out = document.getElementById('scriptsOut');
+  out.innerHTML = `<div class="lw"><div class="sp"></div><p>正在生成「${esc(name)}」脚本……</p></div>`;
+  try {
+    const prompt = (mode === 'knowledge') ? knowledgeScriptPrompt(c) : scriptPrompt(c);
+    const script = await ask(prompt);
+    gd[c.id] = { script, shots: null };
+    out.innerHTML = buildCard(c, ai, script);
+    showN('✦ 脚本已生成', true);
+  } catch(e) {
+    out.innerHTML = `<div class="card"><div class="card-title">${esc(name)}</div><p style="color:var(--r);font-size:13px;margin-top:8px;">生成失败：${e.message}</p></div>`;
+    showN('生成失败', false);
+  }
+}
+
+async function generateAll() {
+  await generateCurrent();
+}
+
+function scriptPrompt(c) {
+  const hook = c.selectedHook || (c.hooks[0] || '');
+  const transcript = c.refTranscript ? c.refTranscript.slice(0, 800) : '';
+  const analysis = c.refAnalysis || {};
+
+  // Build style examples by analyzing the ACTUAL transcript sentences
+  const styleSection = transcript ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【参考台词 — 你必须模仿这个人说话的方式】
+
+${transcript}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+仔细读完上面的台词，然后回答这几个问题（只在脑子里回答，不要输出）：
+① 这个人的句子平均有多长？（短句/中句/长句）
+② 他说话有没有停顿感？怎么停顿的？
+③ 他有没有直接说数字或具体例子？
+④ 他的开场是怎么抓住你的？
+⑤ 他的语气是自信的？随意的？还是叙事的？
+
+然后，写脚本时完全复制那种说话感觉。
+不是复制内容，是复制说话的节奏、句子的长短、停顿的方式。
+
+分析结果参考：
+- 开场风格：${analysis.hookStyle || '直接说结论'}
+- 说话语气：${analysis.tone || '口语化，自然'}
+- 内容结构：${analysis.structure || '开场 → 展开 → 结尾'}
+` : `
+说话要像朋友聊天：短句、直接、有停顿、不用书面语。
+`;
+
+  return `你是一位专门写马来西亚华人 UGC 短视频脚本的写手。
+
+${styleSection}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+创作者的真实资料：
+姓名：${c.f.name || c.codename}
+职业：${c.f.job}
+年龄层：${c.f.age}
+加入前的处境：${c.f.before}
+当时最担心的：${c.f.fear}
+怎么认识 JS Tradventures：${c.f.howmet}
+加入后的改变：${c.f.after}
+最大的帮助：${c.f.jst_help}
+想对自己说的话：${c.f.message}
+其他：${c.notes}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+写之前先做这件事：
+从上面的资料里找出最具体、最真实的细节，例如：
+- 加入前是什么状态？当时有什么具体的事情发生？
+- 亏钱是什么感觉？当时在想什么？
+- 加入后第一个改变是什么？有没有具体的数字或事件？
+把这些细节展开写，不要概括。
+
+写作规则：
+① 品牌名称只写「JS Tradventures」，绝对不可以写「JST」
+② 纯简体中文，不加英文或马来文
+③ 整体念出来 75-90 秒，每段都要充分展开
+④ 绝对禁止：「在人生道路上」「深刻体会」「面对挑战」「深感」「令我」「使我」「不禁」「由衷」「满怀」「踏上」
+⑤ 段与段之间要有自然的衔接句，不要突然跳话题
+${hook ? `⑥ 开场第一句必须是：「${hook}」` : '⑥ 开场用一句让人停下来的话，参考台词的开场方式'}
+
+用以下标签分段：
+
+[开场]
+Hook 第一句 + 2-3 句引出，口语，有停顿感，跟下一段要有衔接
+
+[共鸣]
+5-7 句，说出观众的处境，要有具体画面感
+例如不是「很辛苦」，是「每次发薪日前三天，我都不敢看银行余额」
+结尾自然衔接到故事段
+
+[故事]
+7-9 句，主人公真实经历，把具体细节展开
+要有转折，说出当时的感受，有情绪
+开头要从共鸣段自然接过来，例如「我就是这样，直到……」
+
+[JS Tradventures]
+5-6 句，具体说帮了什么，真实改变
+开头要从故事段自然接过来，例如「后来我……」「就是那时候……」
+不要广告感，像在推荐朋友
+
+[结尾]
+2-3 句，给还在犹豫的人
+开头从 JS Tradventures 段自然接过来
+口语，有温度
+
+直接给脚本，不要任何解释。`;
+}
+
+
+function shotPrompt(c, script) {
+  return `你是一位专业的短视频导演，为以下 UGC 脚本制作完整拍摄清单。
+
+创作者：${c.f.name || c.codename}
+背景：${c.f.job}，${c.f.before}
+
+脚本全文：
+${script}
+
+拍摄清单要求：
+- 主镜头（A-roll）：创作者对镜头说话，说明拍摄角度、表情、手势
+- 补充镜头（B-roll）：配合旁白画面，至少 10 个，要有创意和变化
+- B-roll 必须贴合马来西亚普通人生活，手机就能拍，不需要专业设备
+- B-roll 建议包含：日常生活场景、手机屏幕特写、环境空镜、人物动作细节、对比画面等
+- 每个 B-roll 描述要具体，说清楚拍什么、怎么拍、在哪里拍、什么角度
+
+输出格式，每个镜头一行，用 | 分隔：
+段落|时间码|对应台词|类型|详细拍摄描述
+
+段落只能是：开场/共鸣/故事/JST/结尾
+类型只能是：主镜头/补充镜头
+不要表头，直接输出数据行。`;
+}
+
+// ─────────────────────────────────────────────
+// OUTPUT CARDS
+// ─────────────────────────────────────────────
+function rawScript(s) {
+  // Return plain text version for textarea (no HTML spans)
+  return esc(s);
+}
+
+function buildCard(c, i, script) {
+  const name = (c.mode === 'knowledge') ? (c.knowTopic || '知识型脚本') : (c.f.name || c.codename || ('创作者' + (i+1)));
+  const cid = 'c' + Math.round(c.id);
+  return `<div class="out-card">
+    <div class="out-hdr">
+      <div class="out-name">✦ ${esc(name)}</div>
+      <button class="btn btn-s" style="font-size:11px;padding:6px 12px;" onclick="copyEl('${cid}_s')">📋 复制脚本</button>
+    </div>
+    <div class="out-body">
+      <div style="position:relative;">
+        <button class="cbtn" onclick="copyEl('${cid}_s')" style="position:absolute;top:10px;right:10px;z-index:2;">复制</button>
+        <textarea id="${cid}_s" style="width:100%;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:20px;padding-right:80px;font-size:14px;line-height:1.9;color:var(--t);min-height:300px;font-family:'Noto Sans SC',sans-serif;resize:vertical;outline:none;" oninput="gd[${JSON.stringify(c.id)}].script=this.value">${rawScript(script)}</textarea>
+      </div>
+    </div>
+  </div>`;
+}
+
+function fmtScript(s) {
+  return s
+    .replace(/\[开场\]/g,'<span style="color:var(--r);font-weight:700;font-size:11px;letter-spacing:1px;">▶ 开场</span>')
+    .replace(/\[共鸣\]/g,'<span style="color:var(--p);font-weight:700;font-size:11px;letter-spacing:1px;">▶ 共鸣</span>')
+    .replace(/\[故事\]/g,'<span style="color:var(--g);font-weight:700;font-size:11px;letter-spacing:1px;">▶ 故事</span>')
+    .replace(/\[JST\]/g,'<span style="color:var(--a);font-weight:700;font-size:11px;letter-spacing:1px;">▶ JST</span>')
+    .replace(/\[结尾\]/g,'<span style="color:#ff9f43;font-weight:700;font-size:11px;letter-spacing:1px;">▶ 结尾</span>');
+}
+
+function buildTable(raw) {
+  if (!raw || !raw.trim()) return '<p style="color:var(--m);font-size:13px;padding:16px;">拍摄清单为空。</p>';
+  const segCls = {'开场':'s1c','共鸣':'s2c','故事':'s3c','JST':'s4c','结尾':'s5c'};
+  const rows = raw.trim().split('\n').map(line => {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length < 4) return '';
+    const [seg, tc, audio, type, shot] = parts;
+    return `<tr>
+      <td><span class="slbl ${segCls[seg]||'s2c'}">${esc(seg||'')}</span><br><span style="color:var(--m);font-size:11px;">${esc(tc||'')}</span></td>
+      <td>${esc(audio||'')}</td>
+      <td><span class="${type==='主镜头'?'at':'bt'}">${esc(type||'补充镜头')}</span>${esc(shot||'')}</td>
+    </tr>`;
+  }).join('');
+  return `<table class="tbl"><thead><tr><th style="width:90px;">段落</th><th>🎙️ 旁白台词</th><th>🎬 拍摄画面</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function polishScripts() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+
+  const c = C();
+  const cid = 'c' + Math.round(c.id);
+  const ta = document.getElementById(cid + '_s');
+  if (!ta || !ta.value.trim()) { showN('没有脚本内容可以润色', false); return; }
+
+  // Save latest textarea content
+  if (!gd[c.id]) gd[c.id] = {};
+  gd[c.id].script = ta.value.trim();
+
+  const btn = document.getElementById('polishBtn');
+  const st = document.getElementById('polishStatus');
+  if (btn) btn.disabled = true;
+  if (st) { st.textContent = 'AI 正在润色检查…'; st.style.color = 'var(--p)'; }
+
+  try {
+    const result = await ask(polishPrompt(gd[c.id].script, c));
+    ta.value = result;
+    gd[c.id].script = result;
+    if (st) { st.textContent = '✓ 润色完成，请检查后确认生成拍摄清单'; st.style.color = 'var(--a)'; }
+    showN('✓ 脚本润色完成', true);
+  } catch(e) {
+    if (st) { st.textContent = '润色失败：' + e.message; st.style.color = 'var(--r)'; }
+    showN('润色失败', false);
+  }
+  if (btn) btn.disabled = false;
+}
+
+function polishPrompt(script, c) {
+  return `你是一位专业的短视频脚本编辑。
+
+任务：优化以下脚本，把创作者加的词自然融入，同时确保整体口语化。
+
+规定：
+1. 品牌名称只能写「JS Tradventures」，不可以写「JST」
+2. 全程口语化，像真人跟朋友说话，不要书面语
+3. 删掉所有「在人生的道路上」「深刻体会」「面对挑战」「我深感」这类书面语，换成口语表达
+4. 创作者加的词要保留，融入得自然
+5. 保留所有 [开场] [共鸣] [故事] [JS Tradventures] [结尾] 段落标签
+
+创作者：${c.f.name}
+
+脚本：
+${script}
+
+直接输出优化后的完整脚本，不要任何解释。`;
+}
+
+async function confirmAndGenShots() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+
+  const c = C();
+  const cid = 'c' + Math.round(c.id);
+  const name = c.f.name || c.codename || ('创作者'+(ai+1));
+
+  // Read latest script from textarea
+  const ta = document.getElementById(cid + '_s');
+  if (ta && ta.value.trim()) {
+    if (!gd[c.id]) gd[c.id] = {};
+    gd[c.id].script = ta.value.trim();
+  }
+
+  const d = gd[c.id];
+  if (!d || !d.script) { showN('请先生成脚本', false); return; }
+
+  goStep(4);
+  const out = document.getElementById('shotOut');
+  out.innerHTML = `<div class="lw"><div class="sp"></div><p>正在为「${esc(name)}」生成拍摄清单……</p></div>`;
+
+  try {
+    const shots = await ask(shotPrompt(c, d.script));
+    d.shots = shots;
+    out.innerHTML = `<div class="out-card" style="margin-bottom:20px;">
+      <div class="out-hdr"><div class="out-name">🎬 ${esc(name)} — 拍摄清单</div></div>
+      <div class="out-body" style="overflow-x:auto;">${buildTable(shots)}</div>
+    </div>`;
+    showN('✦ 拍摄清单已生成', true);
+  } catch(e) {
+    out.innerHTML = `<div class="card"><p style="color:var(--r);font-size:13px;">生成失败：${e.message}</p></div>`;
+    showN('生成失败', false);
+  }
+}
+
+function buildShots() {
+  let html = '';
+  creators.forEach((c,i) => {
+    const d = gd[c.id]; if (!d || !d.shots) return;
+    const name = c.f.name || c.codename || ('创作者'+(i+1));
+    html += `<div class="out-card" style="margin-bottom:20px;">
+      <div class="out-hdr"><div class="out-name">🎬 ${esc(name)} — 拍摄清单</div></div>
+      <div class="out-body" style="overflow-x:auto;">${buildTable(d.shots)}</div>
+    </div>`;
+  });
+  if (!html) html = '<div class="empty"><div class="ei">🎬</div><p>先确认脚本后这里会显示拍摄清单。</p></div>';
+  document.getElementById('shotOut').innerHTML = html;
+}
+
+// ─────────────────────────────────────────────
+// API
+// ─────────────────────────────────────────────
+async function ask(prompt) {
+  const key = getKey();
+  if (!key) throw new Error('请先设置 API Key');
+  const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key
+    },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      max_tokens: 2048,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  let txt;
+  try { txt = await r.text(); } catch(e) { throw new Error('网络错误'); }
+  if (!r.ok) throw new Error('HTTP ' + r.status + ': ' + txt.slice(0,200));
+  let d;
+  try { d = JSON.parse(txt); } catch(e) { throw new Error('格式错误: ' + txt.slice(0,100)); }
+  if (d.error) throw new Error(d.error.message || JSON.stringify(d.error).slice(0,150));
+  if (!d.choices || !d.choices[0]) throw new Error('无响应内容');
+  return d.choices[0].message?.content || '';
+}
+
+function getKey() { return localStorage.getItem('jst_groq_key') || ''; }
+function saveKey() {
+  const v = document.getElementById('apiKeyInput')?.value.trim();
+  if (!v || v.length < 10) { showN('请输入有效的 Groq API Key', false); return; }
+  localStorage.setItem('jst_groq_key', v);
+  refreshKeyUI();
+  showN('✓ API Key 已保存', true);
+}
+function clearKey() {
+  localStorage.removeItem('jst_groq_key');
+  const i = document.getElementById('apiKeyInput');
+  if (i) i.value = '';
+  refreshKeyUI();
+}
+function refreshKeyUI() {
+  const key = getKey();
+  const bar = document.getElementById('apibar');
+  const st = document.getElementById('apiStatus');
+  const clr = document.getElementById('apiClearBtn');
+  const inp = document.getElementById('apiKeyInput');
+  if (!bar) return;
+  if (key) {
+    bar.style.borderColor = 'rgba(200,255,0,.4)';
+    bar.style.background = 'rgba(200,255,0,.05)';
+    if (st) st.textContent = '✓ Groq API Key 已设置';
+    if (clr) clr.style.display = 'inline-block';
+    if (inp) inp.value = key;
+  } else {
+    bar.style.borderColor = 'rgba(255,77,109,.3)';
+    bar.style.background = 'rgba(255,77,109,.05)';
+    if (st) st.textContent = '请先输入 Groq API Key';
+    if (clr) clr.style.display = 'none';
+  }
+}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function goStep(n) {
+  // panels: p0=0, p1=1, p2=2, p3=3, p4=4
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('on', i===n));
+  document.querySelectorAll('.step').forEach((s,i) => {
+    s.classList.toggle('active', i===n);
+    if (i<n) s.classList.add('done'); else s.classList.remove('done');
+  });
+  if (n===2) { renderTabs(); renderEditForm(); renderHookUI(); }
+  if (n===0) { renderTabs(); syncRefUI(); }
+  if (n===1) { renderTabs(); }
+}
+
+function syncRefUI() {
+  const c = C();
+  // Restore transcript
+  const rt = document.getElementById('refTranscript');
+  if (rt) rt.value = c.refTranscript || '';
+  // Restore analysis result or clear
+  const result = document.getElementById('refAnalysisResult');
+  const st = document.getElementById('refAnalyzeStatus');
+  if (c.refAnalysis) {
+    showRefAnalysis(c.refAnalysis);
+    if (st) { st.textContent = '✓ 已分析'; st.className = 'status ok'; }
+  } else {
+    if (result) result.style.display = 'none';
+    if (st) { st.textContent = ''; st.className = 'status'; }
+  }
+  // Always update the top ref box with current creator's analysis
+  updateTopRefBox(c);
+}
+
+function updateTopRefBox(c) {
+  const nameEl = document.getElementById('refBoxCreatorName');
+  const hookEl = document.getElementById('refBox_hook');
+  const toneEl = document.getElementById('refBox_tone');
+  const structEl = document.getElementById('refBox_structure');
+  const visualEl = document.getElementById('refBox_visual');
+  if (!hookEl) return;
+
+  const analysis = c.refAnalysis;
+  if (analysis) {
+    if (nameEl) nameEl.textContent = (c.f.name || c.codename || '当前创作者') + ' 的参考风格';
+    if (hookEl) hookEl.textContent = analysis.hookStyle || '';
+    if (toneEl) toneEl.textContent = analysis.tone || '';
+    if (structEl) structEl.textContent = analysis.structure || '';
+    if (visualEl) visualEl.textContent = analysis.visual || '';
+  } else {
+    if (nameEl) nameEl.textContent = (C().f.name || C().codename || '当前创作者') + ' — 默认风格';
+    if (hookEl) hookEl.textContent = '反直觉陈述式 — 开口说一句让人意外的结论，逼观众继续看';
+    if (toneEl) toneEl.textContent = '轻松随意，像跟朋友讲道理，不推销，讲观念';
+    if (structEl) structEl.textContent = '开场 → 引发共鸣 → 展开故事 → 情绪升华结尾';
+    if (visualEl) visualEl.textContent = '大字幕强调重点，单场景对镜头，手势辅助表达';
+  }
+}
+
+function goToStep2() {
+  saveStep1();
+  const c = C();
+  if (!c.parsed && !c.f.name) {
+    showN('请先贴入内容并解析，或进入下一步手动填写', false);
+  }
+  goStep(2);
+}
+
+function saveRefFields() {
+  const c = C();
+  const rt = document.getElementById('refTranscript');
+  if (rt) c.refTranscript = rt.value;
+}
+
+function swTab(btn, tid) {
+  const body = btn.closest('.out-body');
+  body.querySelectorAll('.otab').forEach(t => t.classList.remove('on'));
+  btn.classList.add('on');
+  body.querySelectorAll('[id$="_sv"],[id$="_tv"]').forEach(p => p.style.display='none');
+  const t = document.getElementById(tid); if(t) t.style.display='block';
+}
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function copyEl(id) {
+  const el = document.getElementById(id); if (!el) return;
+  const text = el.tagName === 'TEXTAREA' ? el.value : el.innerText;
+  navigator.clipboard.writeText(text).then(() => showN('✓ 已复制', true));
+}
+
+function copyAll() {
+  const c = C();
+  const d = gd[c.id];
+  if (!d || !d.script) { showN('没有脚本可以复制', false); return; }
+  navigator.clipboard.writeText(d.script).then(() => showN('✓ 脚本已复制', true));
+}
+
+function showN(msg, ok=true) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'notif show ' + (ok ? 'ok' : 'err');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─────────────────────────────────────────────
+// MODE (story / knowledge)
+// ─────────────────────────────────────────────
+function setMode(mode) {
+  C().mode = mode;
+  document.getElementById('modeStoryBtn').classList.toggle('active', mode === 'story');
+  document.getElementById('modeKnowBtn').classList.toggle('active', mode === 'knowledge');
+  document.getElementById('storySection').style.display = mode === 'story' ? 'block' : 'none';
+  document.getElementById('knowledgeSection').style.display = mode === 'knowledge' ? 'block' : 'none';
+  // Update Step 2 button label
+  const hookBtn = document.getElementById('showHookBtn');
+  if (hookBtn) hookBtn.textContent = mode === 'knowledge' ? '✦ 确认内容，生成 Hook →' : '✦ 确认内容，生成 Hook →';
+}
+
+function syncModeUI() {
+  const mode = C().mode || 'story';
+  setMode(mode);
+  // Sync knowledge fields
+  const kt = document.getElementById('knowledgeTopic');
+  const ck = document.getElementById('customKnowPoint');
+  if (kt) kt.value = C().knowTopic || '';
+  if (ck) ck.value = C().knowPoint || '';
+  // Show suggestions if already generated
+  if (C().knowSuggestions && C().knowSuggestions.length) {
+    renderSuggestions(C().knowSuggestions);
+  }
+}
+
+// ─────────────────────────────────────────────
+// KNOWLEDGE SUGGESTIONS
+// ─────────────────────────────────────────────
+async function suggestPoints() {
+  if (!getKey()) { showN('请先设置 API Key', false); return; }
+  const c = C();
+  const topic = document.getElementById('knowledgeTopic')?.value.trim();
+  if (!topic) { showN('请先输入主题', false); return; }
+  c.knowTopic = topic;
+
+  const btn = document.getElementById('suggestBtn');
+  const st = document.getElementById('suggestStatus');
+  const txt = document.getElementById('suggestBtnTxt');
+  btn.disabled = true;
+  txt.textContent = '生成中…';
+  if (st) { st.textContent = ''; st.className = 'status'; }
+
+  try {
+    const result = await ask(suggestPrompt(topic));
+    const lines = result.split('\n').map(l => l.trim()).filter(l => l.length > 5);
+    // Parse numbered suggestions with descriptions
+    const suggestions = [];
+    let current = null;
+    for (const line of lines) {
+      if (/^[1-3][.)]\s/.test(line)) {
+        if (current) suggestions.push(current);
+        current = { title: line.replace(/^[1-3][.)]\s*/, '').trim(), desc: '' };
+      } else if (current && line && !line.startsWith('[')) {
+        current.desc += (current.desc ? ' ' : '') + line;
+      }
+    }
+    if (current) suggestions.push(current);
+
+    c.knowSuggestions = suggestions.slice(0, 3);
+    renderSuggestions(c.knowSuggestions);
+    if (st) { st.textContent = '✓ 建议已生成'; st.className = 'status ok'; }
+    showN('✓ 知识点建议已生成', true);
+  } catch(e) {
+    if (st) { st.textContent = '生成失败：' + e.message; st.className = 'status err'; }
+  }
+  btn.disabled = false;
+  txt.textContent = '✦ AI 建议知识点';
+}
+
+function suggestPrompt(topic) {
+  return `你是一位交易和投资知识的内容策划，专门为马来西亚华人制作简单易懂的教育短视频。
+
+主题：「${topic}」
+
+根据这个主题，建议 3 个适合做成 60 秒短视频的知识点。每个知识点要：
+- 只讲一个清晰的概念
+- 普通小白能听懂
+- 有实用性，看完能用到
+
+输出格式：
+1. （知识点标题，10字以内）
+（2-3句说明这个知识点要教什么，为什么有用）
+
+2. （知识点标题，10字以内）
+（2-3句说明）
+
+3. （知识点标题，10字以内）
+（2-3句说明）
+
+只输出这三个，不要其他文字。`;
+}
+
+function renderSuggestions(suggestions) {
+  const box = document.getElementById('suggestionsBox');
+  const list = document.getElementById('suggestionsList');
+  if (!box || !list) return;
+  const c = C();
+  list.innerHTML = suggestions.map((s, i) => `
+    <div class="suggest-card ${c.knowPoint === s.title ? 'sel' : ''}" onclick="selectSuggestion(${i})">
+      <div class="suggest-dot"></div>
+      <div>
+        <div class="suggest-title">${esc(s.title)}</div>
+        <div class="suggest-desc">${esc(s.desc)}</div>
+      </div>
+    </div>
+  `).join('');
+  box.style.display = 'block';
+}
+
+function selectSuggestion(i) {
+  const c = C();
+  const s = c.knowSuggestions[i];
+  c.knowPoint = s.title + '：' + s.desc;
+  c.knowPointConfirmed = true;
+  const ck = document.getElementById('customKnowPoint');
+  if (ck) ck.value = c.knowPoint;
+  renderSuggestions(c.knowSuggestions);
+  showN('✓ 已选择知识点', true);
+}
+
+// ─────────────────────────────────────────────
+// KNOWLEDGE SCRIPT PROMPT
+// ─────────────────────────────────────────────
+function knowledgeScriptPrompt(c) {
+  const hook = c.selectedHook || (c.hooks[0] || '');
+  const hasRef = c.refAnalysis && c.refTranscript;
+  const transcript = c.refTranscript ? c.refTranscript.slice(0, 600) : '';
+
+  const styleBlock = hasRef ? `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【参考台词 — 模仿这个人说话的节奏和感觉】
+${transcript}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+模仿上面台词的说话方式：句子多短、怎么停顿、语气随意还是正式。
+` : `像朋友教你：短句、直接、口语、有停顿感。`;
+
+  return `你是一位专门写马来西亚华人交易教育短视频脚本的写手。
+
+${styleBlock}
+
+要教的知识点：
+${c.knowPoint || c.knowTopic}
+
+写一段 50-60 秒的知识型 UGC 脚本。
+
+写规则：
+① 纯简体中文，不加英文或马来文
+② 每句话短，像真人说话
+③ 禁止书面语：「在……领域中」「深刻理解」「值得注意的是」「不可忽视」
+④ 要用比喻或简单例子，让 10 岁小孩也能听懂
+⑤ 整体像朋友教你，不是老师上课
+${hook ? `⑥ 开场第一句：「${hook}」` : '⑥ 开场用一句让人停下来的话，吸引继续看'}
+
+用以下标签分段：
+
+[开场]
+一句 Hook，然后 1-2 句引出知识点，口语
+
+[解释]
+把这个知识点用最简单的方式解释清楚
+用比喻或生活例子，要具体
+至少 6-8 句，让人真的听懂
+
+[示例]
+给一个具体的例子或场景
+说明在实际交易中怎么用这个知识
+
+[结尾]
+1-2 句，总结重点
+轻轻提一下 JS Tradventures：「这是我在 JS Tradventures 学到的……」之类
+不要硬销，自然带出
+
+直接给脚本，不要解释。`;
+}
+
+// ─────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────
+init();
+goStep(0);
+refreshKeyUI();
+</script>
+</body>
+</html>
